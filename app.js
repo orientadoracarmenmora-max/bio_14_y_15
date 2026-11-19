@@ -4,7 +4,7 @@ const modulos = [...externos,...lecciones];
 const banco = [...preguntas,...preguntasExternos];
 const $ = id => document.getElementById(id);
 const key = "tema15-estudio-v1";
-const defaults = {done:[],seen:[], answers:{}, sorted:false, size:"100", contrast:false, rate:"1", voice:""};
+const defaults = {done:[],answers:{}, sorted:false, size:"100", contrast:false, rate:"1", voice:""};
 let saved = {};
 try { saved = JSON.parse(localStorage.getItem(key)) || {}; } catch { /* Local storage can be unavailable. */ }
 const state = {...defaults,...saved};
@@ -41,7 +41,7 @@ function speak(area = screen) {
     || synth.getVoices().find(item => item.lang.toLowerCase().startsWith("es"));
   const lines = area.querySelectorAll("h1,h2,h3,p,figcaption,legend,.choice,li,.feedback");
   const chunks = Array.from(lines)
-    .filter(node => node.innerText.trim() && !node.closest("[hidden]") && !node.querySelector("p,li"))
+    .filter(node => node.innerText.trim() && !node.closest("[hidden]") && (!node.closest("details") || node.closest("details").open) && !node.querySelector("p,li"))
     .map(node => (node.querySelector(".sort-row span")?.innerText || node.innerText).trim());
   let index = 0;
   function next() {
@@ -87,6 +87,9 @@ document.querySelector(".skip").addEventListener("click", event => {
 });
 
 const button = (href,label,primary=false) => `<a class="button ${primary ? "primary" : ""}" href="#${href}">${label}</a>`;
+const speaker = (label,attributes="") => `<button type="button" class="speaker" aria-label="${label}" title="${label}" ${attributes}><span aria-hidden="true">🔊</span></button>`;
+const explanation = content => content.split(/(?<=[.!?])\s+(?=(?:<strong>)?[A-ZÁÉÍÓÚÜÑ¿¡])/u)
+  .map(sentence => `<p>${sentence}</p>`).join("");
 const flow = items => `<ol class="diagram">${items.map(item => `<li>${item}</li>`).join("")}</ol>`;
 const visual = {
   magma: `<figure><div class="volcano" aria-hidden="true"><span class="cone"></span><span class="vent"></span><span class="chamber"></span></div>
@@ -109,34 +112,105 @@ const exam = `<p class="muted">Indicaciones de examen para el tema 15.</p>
 <li>Metamorfismo, factores, cambios, tipos, serie regional y reconocimiento de rocas. Foliación, estructura granoblástica, corneana y milonita.</li>
 <li>Definición de silicato, olivino y granates, ciclo de las rocas, esfuerzos, pliegues y fallas.</li></ul></section>
 <section class="card"><h2>Qué se excluye</h2><p>Tipos hawaiana, estromboliana y peleana, y el recuadro azul completo de la p. 291. Diabasa, microscopio petrográfico, estructura de los silicatos y actividad sísmica. Entre los emplazamientos intrusivos, céntrate en plutón y dique.</p></section></div>
-<section class="block"><h2>Material de referencia</h2><p>Tema 15 del libro, pp. 287–307. Las lecciones indican las páginas de estudio. La guía contrasta el audio recuperado del tema 15 con el PDF. La prioridad exacta de «criptocristalina» se oye de forma ambigua; puedes consultar su definición en la lección y en la p. 292.</p></section>`;
+<section class="block"><h2>Material de referencia</h2><p>Tema 15 del libro, pp. 287–307. Los apartados indican las páginas de estudio. La guía contrasta el audio recuperado del tema 15 con el PDF. La prioridad exacta de «criptocristalina» se oye de forma ambigua; puedes consultar su definición en el apartado y en la p. 292.</p></section>`;
 
 const bookImages = {
   meteorizacion: [["14-mecanica","Ejemplos de meteorización mecánica","Cuatro mecanismos ilustrados con fotografías de rocas y paisajes.","268"],["14-raices","Raíces y meteorización","Raíces de árbol que ocupan y ensanchan grietas de una roca.","269"]],
   suelo: [["14-horizontes","Perfil real de un suelo","Corte vertical con vegetación y capas de diferente color sobre la roca.","270"],["14-suelos","Compara perfiles de suelo","Cuatro perfiles del libro, entre ellos el caliche y el suelo rocoso.","271"]],
   sedimentos: [["14-transporte","Cómo viajan las partículas","Esquema del libro con suspensión, flotación, disolución, reptación, saltación y rodadura.","272"],["14-depositos","Dos formas de depósito","Cantos en un cauce y barras arenosas vistas desde arriba.","273"]],
   sedimentarias: [["14-sedimentarias","Reconoce las rocas detríticas","Conglomerado, arenisca y ejemplos de partículas finas en la clasificación del libro.","274"]],
-  magma: [["15-tectonica","Procesos internos y placas","Bloque diagrama de subducción, fallas transformantes y ascenso de plumas térmicas.","288"],["15-intrusiones","Plutones y diques en el subsuelo","Corte donde una masa abovedada y láminas de magma se emplazan entre rocas.","289"],["15-volcan","Corte de un volcán","Cono, conducto, cámara y colada. Contrasta esta vista con las partes de la lección.","290"]],
+  magma: [["15-tectonica","Procesos internos y placas","Bloque diagrama de subducción, fallas transformantes y ascenso de plumas térmicas.","288"],["15-intrusiones","Plutones y diques en el subsuelo","Corte donde una masa abovedada y láminas de magma se emplazan entre rocas.","289"],["15-volcan","Corte de un volcán","Cono, conducto, cámara y colada. Contrasta esta vista con las partes descritas.","290"]],
   igneas: [["15-enfriamiento","Dónde se forman las rocas ígneas","Corte del volcán que muestra emplazamientos superficiales y profundos.","292"],["15-igneas","Muestras de rocas ígneas","Fotografías de pumita, andesita, obsidiana, basalto, granito, diorita, sienita y gabro.","293"]],
   meta: [["15-aureola","Aureola alrededor de una intrusión","Corte donde el plutón calienta la roca encajante y la transforma a su alrededor.","297"],["15-foliacion","Minerales orientados y foliación","Esquema de la orientación de los minerales planos bajo presión.","298"],["15-metamorficas","Muestras de rocas metamórficas","Fotografías de rocas foliadas y de rocas con estructura granoblástica.","299"]],
   ciclo: [["15-ciclo","Ciclo de las rocas en el libro","Diagrama de los caminos entre magma, rocas y sedimentos.","301"]],
   esfuerzos: [["15-pliegues","Elementos del pliegue","Corte con capas plegadas, núcleo, charnela, flancos y plano axial.","302"],["15-fallas","Elementos y tipos de falla","Bloques de roca desplazados a lo largo de un plano de fractura.","303"]]
 };
-function figures(lesson) {
-  return `<div class="book-figures">${(bookImages[lesson.id] || []).map(([file,title,alt,page])=>`<figure class="book-figure"><a href="./${file}.webp" aria-label="Ampliar: ${title}" target="_blank" rel="noopener">
+const studyQuestions = {
+  meteorizacion: [
+    ["¿Qué es la meteorización? Explica en qué se diferencia de la erosión.","La meteorización fragmenta una roca o altera sus minerales en el lugar donde está. La erosión retira y moviliza materiales, que pueden proceder de la meteorización."],
+    ["¿En qué consiste la termoclastia y por qué es mecánica?","Las diferencias de temperatura producen dilataciones y contracciones desiguales. Los esfuerzos pueden fracturar la roca sin cambiar su composición química."],
+    ["Algunos feldespatos se transforman en minerales de arcilla. ¿Qué mecanismo explica el cambio? ¿Y si una raíz ensancha una grieta?","La hidrólisis altera químicamente algunos feldespatos. La raíz actúa como cuña, un mecanismo físico de meteorización biológica."]
+  ],
+  suelo: [
+    ["Explica cómo influyen el clima, el tiempo, la pendiente y los seres vivos en la formación de un suelo.","El clima influye en la alteración y la actividad biológica. Con tiempo pueden desarrollarse horizontes. Una pendiente fuerte facilita la pérdida de detritos. Los organismos mezclan el suelo y aportan materia orgánica."],
+    ["En un perfil, ¿cómo distingues los horizontes O, A, B y C?","O es el mantillo superficial. En A predomina el lavado. B recibe materiales procedentes de capas superiores. C contiene material de partida alterado y fragmentos de roca madre."],
+    ["¿Puede un suelo tener muchos poros y dejar pasar el agua lentamente? Distingue también textura y fertilidad.","Sí, si los poros son pequeños o están mal conectados. La porosidad mide el volumen ocupado por huecos y la permeabilidad la facilidad con que circula el agua. La textura describe las proporciones de arena, limo y arcilla. La fertilidad depende también de los nutrientes, el humus, el agua y la aireación."],
+    ["Distingue un caliche y un suelo rocoso a partir de dos perfiles.","En el caliche puede verse una costra de cal vinculada al ascenso de agua y la evaporación en clima árido. El suelo rocoso es delgado y poco desarrollado, sobre roca madre poco alterada."]
+  ],
+  sedimentos: [
+    ["Distingue detrito, erosión y sedimentación usando el ejemplo de una ladera tras la lluvia.","Los fragmentos acumulados en la ladera forman el detrito. Hay erosión si el agua los arranca o los recoge y moviliza. Cuando disminuye la capacidad de transporte y los deposita, hay sedimentación."],
+    ["Una partícula avanza dando saltos y otra viaja dentro del agua sin tocar el fondo. ¿Cómo se transporta cada una?","La primera se mueve por saltación. La segunda se transporta en suspensión. La pista es el contacto repetido con el fondo en el primer caso."],
+    ["Compara la madurez textural de dos muestras y justifica qué rasgos has observado.","En condiciones comparables, una muestra de clastos pequeños y redondeados muestra mayor madurez textural que una de clastos gruesos y angulosos. Tamaño y redondez se observan en las partículas."],
+    ["Distingue depósito gravitacional y acreción cinética.","En el depósito gravitacional el fluido pierde energía y las partículas se depositan. En la acreción cinética las partículas en movimiento se acumulan al encontrar un obstáculo."]
+  ],
+  sedimentarias: [
+    ["¿Cómo se transforma un sedimento en una roca sedimentaria?","La diagénesis incluye la compactación por enterramiento y la cementación, en la que precipitan minerales entre los clastos y los unen."],
+    ["Tienes tres muestras: cantos redondeados de 8 mm, granos de arena de 0,5 mm y una mezcla fina de carbonato y arcilla. Identifícalas y justifica la clasificación.","La primera es una pudinga, conglomerado con clastos redondeados mayores de 2 mm. La segunda es arenisca por su tamaño de grano. La tercera es marga, una roca mixta."],
+    ["Relaciona cuarzo, minerales de arcilla, yeso, halita y calcita con una característica o un ejemplo.","Cuarzo: resistente y habitual en areniscas. Minerales de arcilla: pueden proceder de la alteración de feldespatos. Yeso y halita: se asocian a evaporitas. Calcita: carbonato de calcio habitual en las calizas."]
+  ],
+  magma: [
+    ["Distingue magmatismo, metamorfismo y esfuerzos tectónicos. Identifica un ejemplo de cada uno en el bloque diagrama.","El magmatismo implica fusión y formación de magma. El metamorfismo cambia la roca en estado sólido. Los esfuerzos pueden plegarla o fracturarla. En el diagrama, la subducción facilita la fusión, la compresión en el prisma favorece el metamorfismo y en la falla transformante hay cizalla."],
+    ["¿Qué contiene un magma? ¿Cómo reconocerías un plutón y un dique en un corte?","Puede incluir líquido, gases disueltos y sólidos. El plutón es una masa intrusiva; el dique es tabular y corta las estructuras de la roca encajante."],
+    ["En un dibujo de un volcán, localiza la cámara, la chimenea, el cráter y el cono. ¿En qué se diferencia una caldera de un cráter?","La cámara contiene magma en profundidad; la chimenea es el conducto; el cráter, la abertura; el cono, el relieve acumulado. Una caldera es una depresión mucho más amplia que puede originarse por hundimiento."],
+    ["Explica qué sucede con los gases al ascender el magma. ¿Qué productos puede emitir una erupción?","Al bajar la presión, los gases disueltos forman burbujas y se expanden. La erupción puede emitir gases, lava y piroclastos."],
+    ["¿Qué factores influyen en la actividad volcánica y cómo afectan la sílice y la temperatura a la viscosidad?","Influyen la composición, la temperatura, los gases y el lugar de la erupción. Más sílice suele aumentar la viscosidad. Una temperatura más alta suele favorecer la fluidez."]
+  ],
+  igneas: [
+    ["Relaciona rocas plutónicas, volcánicas y filonianas con el lugar de consolidación y sus texturas habituales.","Las plutónicas se consolidan lentamente en profundidad y suelen tener cristales visibles. Las volcánicas se enfrían con rapidez cerca de la superficie y pueden tener grano fino o vidrio. Las filonianas se emplazan en fracturas u otras discontinuidades a menor profundidad."],
+    ["Una roca tiene cristales grandes dispersos en una matriz de grano fino. Otra conserva huecos de burbujas. Describe sus texturas.","La primera es porfídica. La segunda presenta textura o estructura vacuolar. El tamaño de los cristales y los huecos son pistas distintas."],
+    ["Distingue granito, obsidiana y pumita a partir de características visibles.","El granito tiene un mosaico de cristales visibles. La obsidiana es un vidrio volcánico compacto con fractura curva. La pumita tiene numerosas vacuolas y es ligera."]
+  ],
+  meta: [
+    ["Define metamorfismo. Nombra los factores y explica un cambio que pueda producir cada uno.","Es la transformación de una roca en estado sólido. La presión litostática puede reducir la porosidad, los esfuerzos dirigidos pueden orientar minerales, la temperatura favorece la recristalización y los fluidos facilitan reacciones."],
+    ["Ordena la serie regional desde la arcilla. ¿Por qué el granito de anatexia se clasifica como ígneo?","Arcilla → pizarra → filita → esquisto → gneis → granito de anatexia. Al alcanzarse condiciones de fusión parcial se genera un fundido que puede cristalizar como granito."],
+    ["Compara foliación y estructura granoblástica. Da un ejemplo de roca para cada una.","La foliación es una estructura planar, visible por ejemplo en el esquisto. La estructura granoblástica es un mosaico de granos sin orientación preferente, como en la cuarcita."],
+    ["Una muestra está junto a una intrusión y otra procede de una zona de falla con deformación intensa. ¿Qué tipos de metamorfismo y qué rocas son compatibles?","La corneana es característica del metamorfismo de contacto junto a una intrusión. Una milonita se asocia a la deformación intensa en una zona de falla. El metamorfismo regional afecta zonas extensas."]
+  ],
+  ciclo: [
+    ["¿Qué caracteriza a los silicatos? Pon el ejemplo ígneo y el metamórfico destacados en clase.","El silicio y el oxígeno son componentes fundamentales. El olivino aparece en rocas como la peridotita y algunos basaltos. Los granates pueden aparecer en rocas metamórficas."],
+    ["En el ciclo de las rocas, explica cómo se pasa de sedimento a roca sedimentaria, de roca sólida a metamórfica y de magma a roca ígnea.","El sedimento se convierte en roca sedimentaria por diagénesis. Una roca sólida puede transformarse por metamorfismo. El magma forma roca ígnea al enfriarse y solidificarse."],
+    ["Construye un recorrido del ciclo que incluya granito, sedimentos, arenisca y cuarcita.","El granito expuesto se meteoriza y los materiales se movilizan, se transportan y se depositan. La diagénesis puede formar arenisca. Si es rica en cuarzo, el metamorfismo puede transformarla en cuarcita."]
+  ],
+  esfuerzos: [
+    ["¿Qué distingue un pliegue de una falla y de una diaclasa en un corte?","En el pliegue se curvan las capas. En la falla hay rotura con desplazamiento relativo. En la diaclasa hay una fractura sin desplazamiento apreciable de los bloques."],
+    ["Señala en un dibujo la charnela, los flancos, el núcleo y el plano axial.","La charnela es la zona de mayor curvatura. Los flancos están a ambos lados. El núcleo es la zona más interna. El plano axial pasa por las charnelas de las capas plegadas."],
+    ["Identifica el plano de falla, los labios y el salto. Relaciona tres tipos de falla con el esfuerzo que predomina.","El plano de falla es la superficie de rotura, los labios son los bloques y el salto expresa su desplazamiento relativo. La falla directa se asocia a distensión; la inversa, a compresión; y la de desgarre, a cizalla."]
+  ]
+};
+
+const figurePlacement = {
+  meteorizacion:[1,3], suelo:[1,4], sedimentos:[2,4], sedimentarias:[1],
+  magma:[0,2,3], igneas:[0,4], meta:[2,4,5], ciclo:[3], esfuerzos:[2,3]
+};
+
+function studyPrompts(id) {
+  return `<section class="block study-prompts"><h2>Posibles preguntas de examen</h2>
+  <p>Preguntas de práctica basadas en los contenidos que indicó Belén. Intenta responder antes de abrir el modelo.</p>
+  <ol>${studyQuestions[id].map(([question,answer])=>`<li><p><strong>${question}</strong></p><details><summary aria-label="Ver respuesta modelo: ${question}">Ver respuesta modelo</summary><p>${answer}</p></details></li>`).join("")}</ol>
+  ${id==="suelo"?button("retos","Practicar con perfiles y fotografías"):""}
+  ${id==="meta"?button("serie","Practicar el orden de la serie"):""}
+  </section>`;
+}
+
+function figures(lesson,index) {
+  const related = bookImages[lesson.id].filter((_,i)=>figurePlacement[lesson.id][i]===index);
+  if (!related.length) return "";
+  return `<div class="book-figures">${related.map(([file,title,alt,page])=>`<figure class="book-figure"><a href="./${file}.webp" aria-label="Ampliar en otra pestaña: ${title}" target="_blank" rel="noopener">
     <img src="./${file}.webp" alt="${alt}" loading="lazy"></a><figcaption><strong>${title}.</strong> Libro, p. ${page}.</figcaption></figure>`).join("")}</div>`;
 }
+
 function lessonBody(lesson,readButtons=false) {
   const isComparison = lesson.id === "esfuerzos";
   const diagram = isComparison
     ? `<ul>${lesson.esquema.map(item => `<li>${item}</li>`).join("")}</ul>`
     : flow(lesson.esquema);
+  const listen = title => readButtons ? speaker("Escuchar: "+title,"data-read") : "";
   return `<p class="muted">Libro · pp. ${lesson.paginas}</p>
-  <div class="notice"><h2>Idea principal</h2><p>${lesson.idea}</p></div>
-  <section class="block"><h2>${isComparison ? "Relaciones clave" : "Esquema"}</h2>${diagram}${visual[lesson.id] || ""}</section>
-  ${readButtons ? figures(lesson) : ""}
-  ${lesson.bloques.map(([title,body]) => `<section class="block"><div class="block-head"><h2>${title}</h2>${readButtons?`<button data-read aria-label="Escuchar: ${title}">Escuchar</button>`:""}</div><p>${body}</p></section>`).join("")}
-  <section class="block"><h2>Ejemplo razonado</h2><p>${lesson.ejemplo}</p></section>`;
+  <section class="notice"><div class="block-head"><h2>Idea principal</h2>${listen("Idea principal")}</div><div class="explanation">${explanation(lesson.idea)}</div></section>
+  ${lesson.bloques.map(([title,body],index) => `<section class="block"><div class="block-head"><h2>${title}</h2>${listen(title)}</div><div class="explanation">${explanation(body)}</div>${readButtons ? figures(lesson,index) : ""}</section>`).join("")}
+  <section class="block"><h2>${isComparison ? "Relaciones clave" : "Esquema de repaso"}</h2>${diagram}${visual[lesson.id] || ""}</section>
+  <section class="block"><div class="block-head"><h2>Ejemplo razonado</h2>${listen("Ejemplo razonado")}</div><div class="explanation">${explanation(lesson.ejemplo)}</div></section>
+  ${readButtons?studyPrompts(lesson.id):""}`;
 }
 function printTopic(title,guide,modules) {
   const ids = modules.map(lesson=>lesson.id);
@@ -226,7 +300,7 @@ function sortPage() {
 
 const reviewIds = () => banco.map((_,i)=>i).filter(i=>state.answers[i] === false);
 function quizMenu() {
-  screen.innerHTML += `<section class="block"><h2>Elige un recorrido</h2><p>Recibirás una explicación para la opción que elijas.</p>
+  screen.innerHTML += `<section class="block"><h2>Elige un recorrido</h2><p>Elige un tema o un apartado. Responde a las preguntas y comprueba al momento por qué cada respuesta es correcta o incorrecta. Puedes volver a intentar las preguntas que hayas fallado.</p>
   <label for="topic">Preguntas de</label> <select id="topic"><option value="">Los dos temas</option><option value="14">Todo el tema 14</option><option value="15">Todo el tema 15</option>${modulos.map(lesson=>`<option value="${lesson.id}">${lesson.titulo}</option>`).join("")}</select>
   <div class="actions"><button id="start" class="primary">Empezar práctica</button><button id="mistakes" ${reviewIds().length ? "" : "disabled"}>Repetir fallos (${reviewIds().length})</button></div></section><div id="question"></div>`;
   $("start").onclick = () => {
@@ -284,13 +358,13 @@ function showQuestion(focus) {
 function reviewPage() {
   const correct = Object.values(state.answers).filter(Boolean).length;
   screen.innerHTML += `<section class="block"><h2>Tu progreso</h2>
-  <p>${state.seen.length} de ${modulos.length} lecciones marcadas como estudiadas. ${correct} de ${banco.length} preguntas acertadas en el último intento de cada una.</p>
+  <p>${correct} de ${banco.length} preguntas acertadas en el último intento de cada una.</p>
   <progress aria-label="Preguntas acertadas" max="${banco.length}" value="${correct}"></progress>
   <p>${state.done.length} de ${respuestas.length+identificaciones.length} actividades de examen revisadas.</p>
   <p>Serie regional: ${state.sorted?"completada":"pendiente"}. ${persistent?"El progreso se guarda en este navegador si el almacenamiento está disponible.":"El progreso se conserva durante esta sesión."}</p>
   <button class="primary" id="review-session" ${reviewIds().length?"":"disabled"}>Repasar fallos (${reviewIds().length})</button></section>
   <section class="block"><h2>Repaso rápido</h2><p>Di la idea principal en voz alta y abre la tarjeta para comprobarla.</p>
-  ${modulos.map(lesson=>`<details class="card"><summary>${lesson.titulo}</summary><p>${lesson.idea}</p>${button(lesson.id,"Abrir lección")}</details>`).join("")}</section>`;
+  ${modulos.map(lesson=>`<details class="card"><summary>${lesson.titulo}</summary><p>${lesson.idea}</p>${button(lesson.id,"Abrir apartado")}</details>`).join("")}</section>`;
   $("review-session").onclick = () => {
     beginReview = true;
     location.hash = "practica";
@@ -339,7 +413,7 @@ function renderChallengeList(theme) {
   <button class="primary">Comprobar correspondencias</button></form><div id="feedback-${item.id}" aria-live="polite"></div></section>`).join("")}
   <h2 class="section-title">Escribe y justifica</h2>
   ${respuestas.map(([number,lesson,title,prompt,answer,check],i)=> match(number) ? `<section class="block written">
-  <div class="block-head"><h3>Tema ${number} · ${title}</h3><button data-read aria-label="Escuchar la actividad ${title}">Escuchar</button></div>
+  <div class="block-head"><h3>Tema ${number} · ${title}</h3>${speaker("Escuchar la actividad "+title,"data-read")}</div>
   <p id="prompt-${i}">${prompt}</p><label for="written-${i}">Tu respuesta</label>
   <textarea id="written-${i}" data-draft="${i}" aria-describedby="prompt-${i}" rows="3"></textarea>
   <details><summary>Ver respuesta modelo y criterios</summary><p>${answer}</p><p><strong>Comprueba:</strong> ${check}</p>
@@ -396,7 +470,7 @@ function render(focus) {
   if (page === "examen") screen.innerHTML += `<h2>Tema 14 · Procesos externos</h2>${examExternal}<h2 class="section-title">Tema 15 · Procesos internos</h2>${exam}`;
   if (page === "externos" || page === "internos") {
     const group = page === "externos" ? externos : lecciones;
-    screen.innerHTML += `<p class="kicker">Tema ${page==="externos"?14:15}</p><div class="grid">${group.map(item=>`<section class="card"><h3><a href="#${item.id}">${item.titulo}</a></h3><p>${item.idea}</p></section>`).join("")}</div>`;
+    screen.innerHTML += `<p class="kicker">Tema ${page==="externos"?14:15}</p><div class="grid">${group.map(item=>`<section class="card"><h2><a href="#${item.id}">${item.titulo}</a></h2><div class="explanation">${explanation(item.idea)}</div></section>`).join("")}</div>`;
   }
   if (page === "retos") renderChallenges();
   if (page === "serie") sortPage();
@@ -410,15 +484,7 @@ function render(focus) {
     const group = lesson.tema === 14 ? externos : lecciones;
     const next = group[group.indexOf(lesson)+1];
     screen.innerHTML += lessonBody(lesson,true) + `<div class="actions">
-    <button id="mark" aria-pressed="${state.seen.includes(page)}">${state.seen.includes(page)?"Lección estudiada":"Marcar como estudiada"}</button>
-    <button class="primary" id="lesson-quiz">Practicar esta lección</button>${next?button(next.id,"Siguiente lección"):""}</div>`;
-    $("mark").onclick = event => {
-      const wasSeen = state.seen.includes(page);
-      state.seen = wasSeen ? state.seen.filter(id=>id!==page) : [...state.seen,page];
-      save();
-      event.target.textContent = wasSeen ? "Marcar como estudiada" : "Lección estudiada";
-      event.target.setAttribute("aria-pressed",String(!wasSeen));
-    };
+    <button class="primary" id="lesson-quiz">Practicar este apartado</button>${next?button(next.id,"Siguiente apartado"):""}</div>`;
     $("lesson-quiz").onclick = () => {
       quizTopic = page;
       quiz = {ids:shuffled(banco.map((q,i)=>q[0]===page?i:-1).filter(i=>i>=0)),at:0,score:0,choice:null};
