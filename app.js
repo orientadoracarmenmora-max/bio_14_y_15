@@ -149,8 +149,8 @@ const studyQuestions = {
     ["Relaciona cuarzo, minerales de arcilla, yeso, halita y calcita con una característica o un ejemplo.","Cuarzo: resistente y habitual en areniscas. Minerales de arcilla: pueden proceder de la alteración de feldespatos. Yeso y halita: se asocian a evaporitas. Calcita: carbonato de calcio habitual en las calizas."]
   ],
   magma: [
-    ["Distingue magmatismo, metamorfismo y esfuerzos tectónicos. Identifica un ejemplo de cada uno en el bloque diagrama.","El magmatismo implica fusión y formación de magma. El metamorfismo cambia la roca en estado sólido. Los esfuerzos pueden plegarla o fracturarla. En el diagrama, la subducción facilita la fusión, la compresión en el prisma favorece el metamorfismo y en la falla transformante hay cizalla."],
-    ["¿Qué contiene un magma? ¿Cómo reconocerías un plutón y un dique en un corte?","Puede incluir líquido, gases disueltos y sólidos. El plutón es una masa intrusiva; el dique es tabular y corta las estructuras de la roca encajante."],
+    ["Distingue magmatismo, metamorfismo y esfuerzos tectónicos. Identifica un ejemplo de cada uno en el bloque diagrama de la p. 288.","El magmatismo implica fusión y formación de magma. El metamorfismo cambia la roca en estado sólido. Los esfuerzos pueden plegarla o fracturarla. En el diagrama, la subducción facilita la fusión, la compresión en el prisma favorece el metamorfismo y en la falla transformante hay cizalla."],
+    ["¿Cómo reconocerías un plutón y un dique en un corte?","El plutón es una masa intrusiva; el dique es tabular y corta las estructuras de la roca encajante."],
     ["En un dibujo de un volcán, localiza la cámara, la chimenea, el cráter y el cono. ¿En qué se diferencia una caldera de un cráter?","La cámara contiene magma en profundidad; la chimenea es el conducto; el cráter, la abertura; el cono, el relieve acumulado. Una caldera es una depresión mucho más amplia que puede originarse por hundimiento."],
     ["Explica qué sucede con los gases al ascender el magma. ¿Qué productos puede emitir una erupción?","Al bajar la presión, los gases disueltos forman burbujas y se expanden. La erupción puede emitir gases, lava y piroclastos."],
     ["¿Qué factores influyen en la actividad volcánica y cómo afectan la sílice y la temperatura a la viscosidad?","Influyen la composición, la temperatura, los gases y el lugar de la erupción. Más sílice suele aumentar la viscosidad. Una temperatura más alta suele favorecer la fluidez."]
@@ -162,7 +162,7 @@ const studyQuestions = {
   ],
   meta: [
     ["Define metamorfismo. Nombra los factores y explica un cambio que pueda producir cada uno.","Es la transformación de una roca en estado sólido. La presión litostática puede reducir la porosidad, los esfuerzos dirigidos pueden orientar minerales, la temperatura favorece la recristalización y los fluidos facilitan reacciones."],
-    ["Ordena la serie regional desde la arcilla. ¿Por qué el granito de anatexia se clasifica como ígneo?","Arcilla → pizarra → filita → esquisto → gneis → granito de anatexia. Al alcanzarse condiciones de fusión parcial se genera un fundido que puede cristalizar como granito."],
+    ["Ordena la serie regional desde la arcilla. Explica cómo evoluciona al aumentar la presión y la temperatura y cuándo comienza la fusión.","Arcilla → pizarra → filita → esquisto → gneis → granito de anatexia. Hasta el gneis, la transformación metamórfica ocurre en estado sólido y aumenta el grado. Si se alcanza la fusión parcial, el fundido puede cristalizar como granito."],
     ["Compara foliación y estructura granoblástica. Da un ejemplo de roca para cada una.","La foliación es una estructura planar, visible por ejemplo en el esquisto. La estructura granoblástica es un mosaico de granos sin orientación preferente, como en la cuarcita."],
     ["Una muestra está junto a una intrusión y otra procede de una zona de falla con deformación intensa. ¿Qué tipos de metamorfismo y qué rocas son compatibles?","La corneana es característica del metamorfismo de contacto junto a una intrusión. Una milonita se asocia a la deformación intensa en una zona de falla. El metamorfismo regional afecta zonas extensas."]
   ],
@@ -183,15 +183,43 @@ const figurePlacement = {
   magma:[0,2,3], igneas:[0,4], meta:[2,4,5], ciclo:[3], esfuerzos:[2,3]
 };
 
-function studyPrompts(id) {
-  return `<section class="block study-prompts"><h2>Posibles preguntas de examen</h2>
-  <p>Preguntas de práctica basadas en los contenidos que indicó Belén. Intenta responder antes de abrir el modelo.</p>
-  <ol>${studyQuestions[id].map(([question,answer])=>`<li><p><strong>${question}</strong></p><details><summary aria-label="Ver respuesta modelo: ${question}">Ver respuesta modelo</summary><p>${answer}</p></details></li>`).join("")}</ol>
-  ${id==="suelo"?button("retos","Practicar con perfiles y fotografías"):""}
-  ${id==="meta"?button("serie","Practicar el orden de la serie"):""}
-  </section>`;
-}
+const questionPlacement = {
+  meteorizacion:[0,1,2], suelo:[0,1,2,4], sedimentos:[0,2,3,4],
+  sedimentarias:[0,1,4], magma:[0,2,3,4,6], igneas:[0,3,4],
+  meta:[0,3,4,5], ciclo:[1,2,3], esfuerzos:[1,2,3]
+};
+const extraQuestions = {
+  magma: {
+    1:["¿Qué componentes puede contener el magma?","Una fracción líquida, gases disueltos y una fracción sólida de cristales o fragmentos de roca."],
+    5:["Distingue gases, lava y piroclastos. Clasifica ceniza, lapilli y bombas por tamaño.","Los gases son productos volátiles. La lava es magma emitido al exterior. Los piroclastos son fragmentos sólidos: ceniza menor de 2 mm, lapilli de 2 a 64 mm y bombas mayores de 64 mm."]
+  },
+  igneas: {
+    1:["¿Qué diferencia hay entre textura y estructura en una roca magmática?","La textura describe, entre otros rasgos, el tamaño y la forma de los granos minerales. El libro usa también el término estructura al considerar cavidades, porosidad u orientación de los minerales."],
+    2:["Distingue las texturas fanerítica, microcristalina y vítrea. Da un ejemplo de cada una.","Fanerítica: cristales claramente visibles, como en el granito. Microcristalina: cristales muy pequeños pero apreciables a simple vista, como en la aplita. Vítrea: masa sin cristales, como la obsidiana."]
+  },
+  meta: {
+    1:["¿Qué cambios puede experimentar una roca durante el metamorfismo?","Pueden variar el color, la densidad y la tenacidad. También pueden cambiar la textura, por ejemplo si crecen los cristales, y la estructura, por ejemplo al desarrollarse foliación."],
+    2:["Distingue metamorfismo dinámico, de contacto y regional.","El dinámico se asocia a la deformación en fallas. El de contacto se debe al calor de una intrusión sobre la roca encajante. El regional afecta áreas extensas y se asocia a condiciones de presión y temperatura propias de zonas orogénicas."]
+  },
+  ciclo: {
+    0:["¿Qué elementos son fundamentales en los silicatos?","El silicio y el oxígeno."]
+  }
+};
 
+function studyPrompts(id,index) {
+  const entries = studyQuestions[id]
+    .map((question,i)=>({question,block:questionPlacement[id][i]}))
+    .filter(entry=>entry.block===index).map(entry=>entry.question);
+  const extra = extraQuestions[id]?.[index];
+  if (extra) entries.push(extra);
+  if (!entries.length) return "";
+  const confirmed = id==="meta" && index===3;
+  return `<div class="study-prompts inline-prompts"><h3>${confirmed?"Pregunta confirmada por Belén":entries.length===1?"Posible pregunta de examen":"Posibles preguntas de examen"}</h3>
+  ${entries.map(([question,answer])=>`<div class="exam-question"><p><strong>${question}</strong></p><details><summary aria-label="Ver respuesta modelo: ${question}">Ver respuesta modelo</summary><p>${answer}</p></details></div>`).join("")}
+  ${id==="suelo" && index===1?button("retos","Practicar con perfiles y fotografías"):""}
+  ${confirmed?button("serie","Practicar el orden de la serie"):""}
+  </div>`;
+}
 function figures(lesson,index) {
   const related = bookImages[lesson.id].filter((_,i)=>figurePlacement[lesson.id][i]===index);
   if (!related.length) return "";
@@ -206,11 +234,12 @@ function lessonBody(lesson,readButtons=false) {
     : flow(lesson.esquema);
   const listen = title => readButtons ? speaker("Escuchar: "+title,"data-read") : "";
   return `<p class="muted">Libro · pp. ${lesson.paginas}</p>
+  ${readButtons?'<p class="study-note">Los rótulos de posible pregunta indican contenidos para practicar. La serie regional se marca como confirmada porque Belén lo dijo expresamente.</p>':""}
   <section class="notice"><div class="block-head"><h2>Idea principal</h2>${listen("Idea principal")}</div><div class="explanation">${explanation(lesson.idea)}</div></section>
-  ${lesson.bloques.map(([title,body],index) => `<section class="block"><div class="block-head"><h2>${title}</h2>${listen(title)}</div><div class="explanation">${explanation(body)}</div>${readButtons ? figures(lesson,index) : ""}</section>`).join("")}
+  ${lesson.bloques.map(([title,body],index) => `<section class="block"><div class="block-head"><h2>${title}</h2>${listen(title)}</div><div class="explanation">${explanation(body)}</div>${readButtons ? figures(lesson,index)+studyPrompts(lesson.id,index) : ""}</section>`).join("")}
   <section class="block"><h2>${isComparison ? "Relaciones clave" : "Esquema de repaso"}</h2>${diagram}${visual[lesson.id] || ""}</section>
   <section class="block"><div class="block-head"><h2>Ejemplo razonado</h2>${listen("Ejemplo razonado")}</div><div class="explanation">${explanation(lesson.ejemplo)}</div></section>
-  ${readButtons?studyPrompts(lesson.id):""}`;
+  `;
 }
 function printTopic(title,guide,modules) {
   const ids = modules.map(lesson=>lesson.id);
