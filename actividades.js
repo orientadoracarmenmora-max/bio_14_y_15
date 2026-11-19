@@ -21,6 +21,14 @@ const respuestas = [
 ];
 
 const identificaciones = [
+ {id:"perfil-foto", tema:14, titulo:"Horizontes en una foto real", descripcion:"Mira la fotografía y elige el horizonte que señala cada número.", imagen:["14-podsol","Perfil real con dos marcadores: el 1 señala una franja clara y grisácea; el 2 señala una franja situada debajo, de color ocre.","271"],
+  marcas:[["1","56%","33%"],["2","58%","64%"]],
+  opciones:["Horizonte O","Horizonte A","Horizonte B","Horizonte C"],
+  partes:[
+   ["Número 1","Horizonte A","En este podsol, la franja clara corresponde a la zona de lavado. La infiltración ha retirado parte de sus materiales."],
+   ["Número 2","Horizonte B","La franja ocre situada debajo corresponde al horizonte de acumulación. La identificación se apoya en su posición respecto a la franja lavada y en el perfil que describe el libro."]
+  ], final:"El libro identifica este suelo como podsol. La foto se usa para distinguir A y B. Para nombrar O o C harían falta capas que aquí se vieran con suficiente claridad."},
+
  {id:"fotos-libro", tema:14, titulo:"Lee dos fotografías de las actividades finales", descripcion:"Compara las imágenes A y B ampliadas. Fíjate primero en el tamaño de las partículas y en su aspecto.", imagen:["14-ejercicio-muestras","Dos fotografías del libro. A muestra un sedimento fino claro. B muestra fragmentos visibles de conchas.","283"], opciones:["Muestra A","Muestra B"],
   partes:[
    ["¿En qué muestra son más pequeños los granos visibles?","Muestra A","A muestra arena fina; B muestra fragmentos claramente distinguibles."],

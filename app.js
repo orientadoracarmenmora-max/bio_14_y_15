@@ -320,6 +320,10 @@ function renderChallengeList(theme) {
     const id = item.id;
     if (item.imagen) {
       const [file,alt,page] = item.imagen;
+      if (item.marcas) return `<figure class="book-figure photo-exercise"><div class="numbered-photo">
+        <img src="./${file}.webp" alt="${alt}" loading="lazy">
+        ${item.marcas.map(([n,x,y])=>`<span aria-hidden="true" style="--x:${x};--y:${y}">${n}</span>`).join("")}</div>
+        <figcaption>Fotografía del libro, p. ${page}.</figcaption></figure>`;
       return `<figure class="book-figure"><a href="./${file}.webp" aria-label="Ampliar imagen del libro" target="_blank" rel="noopener"><img src="./${file}.webp" alt="${alt}" loading="lazy"></a><figcaption>Actividad final del libro, p. ${page}.</figcaption></figure>`;
     }
     const profile = (name,layers) => `<figure><ol class="soil-profile soil-variant" aria-label="${name}">${layers.map(([mark,detail])=>`<li><strong>${mark}</strong><span class="sr-only">${detail}</span></li>`).join("")}</ol><figcaption>${name}</figcaption></figure>`;
@@ -360,6 +364,11 @@ function renderChallengeList(theme) {
       feedback.className = "feedback";
       const score = rows.filter(row=>row.right).length;
       feedback.innerHTML = `<h3>${score} de ${rows.length} correctas</h3><ul>${rows.map(row=>`<li><strong>${row.right?"Correcto":"Revisa"} · ${row.label}.</strong> ${row.correct}. ${row.why}</li>`).join("")}</ul>`;
+      if (item.final) {
+        const note = document.createElement("p");
+        note.textContent = item.final;
+        feedback.append(note);
+      }
       if (score===rows.length) markChallenge(item.id,true);
     };
   }

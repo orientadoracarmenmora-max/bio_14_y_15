@@ -3,7 +3,7 @@
 const externos = [
 {
  id:"meteorizacion", titulo:"Meteorización", paginas:"268–269", tema:14,
- idea:"La meteorización altera una roca en el lugar donde se encuentra. Si el material se arranca y se moviliza, hablamos de erosión.",
+ idea:"La meteorización es la fragmentación física de las rocas o la alteración química de sus minerales en la superficie terrestre, en el lugar donde se encuentran. La erosión consiste en la retirada y movilización de materiales por agentes como el agua, el viento o el hielo.",
  bloques:[
  ["Tres formas de alterar una roca","La meteorización mecánica fragmenta la roca y mantiene la composición química y mineralógica. La química altera minerales por reacciones o disuelve sus componentes. La biológica se debe a los seres vivos, que pueden actuar por mecanismos físicos y químicos."],
  ["Mecánica · cuatro mecanismos","Gelifracción: el agua ocupa grietas, se congela, aumenta de volumen y abre la roca. Descompresión: una roca que llega cerca de la superficie pierde presión, se expande y se agrieta. Abrasión: el roce de partículas movidas por el agua, el hielo o el viento desgasta la roca. Termoclastia: cambios de temperatura causan dilataciones o contracciones desiguales que favorecen la rotura."],
