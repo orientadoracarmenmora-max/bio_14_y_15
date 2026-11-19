@@ -128,7 +128,6 @@ const bookImages = {
 const studyQuestions = {
   meteorizacion: [
     ["¿Qué es la meteorización? Explica en qué se diferencia de la erosión.","La meteorización fragmenta una roca o altera sus minerales en el lugar donde está. La erosión retira y moviliza materiales, que pueden proceder de la meteorización."],
-    ["¿En qué consiste la termoclastia y por qué es mecánica?","Las diferencias de temperatura producen dilataciones y contracciones desiguales. Los esfuerzos pueden fracturar la roca sin cambiar su composición química."],
     ["Algunos feldespatos se transforman en minerales de arcilla. ¿Qué mecanismo explica el cambio? ¿Y si una raíz ensancha una grieta?","La hidrólisis altera químicamente algunos feldespatos. La raíz actúa como cuña, un mecanismo físico de meteorización biológica."]
   ],
   suelo: [
@@ -184,7 +183,7 @@ const figurePlacement = {
 };
 
 const questionPlacement = {
-  meteorizacion:[0,1,2], suelo:[0,1,2,4], sedimentos:[0,2,3,4],
+  meteorizacion:[0,2], suelo:[0,1,2,4], sedimentos:[0,2,3,4],
   sedimentarias:[0,1,4], magma:[0,2,3,4,6], igneas:[0,3,4],
   meta:[0,3,4,5], ciclo:[1,2,3], esfuerzos:[1,2,3]
 };
@@ -206,7 +205,30 @@ const extraQuestions = {
   }
 };
 
+const preguntasMecanica = [
+  ["Te dan el nombre. Explica cómo actúa",[
+    ["¿En qué consiste la termoclastia?","Las diferencias de temperatura provocan dilataciones y contracciones desiguales. Los esfuerzos resultantes pueden fracturar la roca."],
+    ["¿En qué consiste la gelifracción?","El agua entra en las grietas. Cuando se congela aumenta de volumen y presiona sus paredes, lo que ensancha la grieta."],
+    ["¿Cómo puede la descompresión fracturar una roca?","Al perder la presión de los materiales que tenía encima, la roca se expande. Esa expansión puede abrir grietas."],
+    ["¿En qué consiste la abrasión?","Las partículas transportadas por el agua, el viento o el hielo rozan la roca y desgastan su superficie."]
+  ]],
+  ["Te dan las características. Identifica el mecanismo",[
+    ["El viento arrastra arena que, al rozar una roca, va desgastando su superficie. ¿Qué mecanismo actúa? Justifica tu respuesta.","Abrasión. La pista es el desgaste por el roce de partículas transportadas."],
+    ["Una roca llega cerca de la superficie. Al disminuir la presión que soporta, se expande y aparecen grietas. ¿Qué mecanismo actúa? Justifica tu respuesta.","Descompresión. La pista es que la pérdida de presión permite que la roca se expanda."],
+    ["Tras repetidos calentamientos y enfriamientos, los minerales de una roca se dilatan y se contraen de manera desigual. ¿Qué mecanismo puede acabar fracturándola? Justifica tu respuesta.","Termoclastia. La pista es la dilatación desigual debida a los cambios de temperatura."],
+    ["El agua penetra en una grieta y durante la noche se congela. Con el tiempo, la grieta se ensancha. ¿Qué mecanismo actúa? Justifica tu respuesta.","Gelifracción. La pista es el aumento de volumen del agua al congelarse dentro de la grieta."]
+  ]]
+];
+function promptCards(entries) {
+  return entries.map(([question,answer])=>`<div class="exam-question"><p><strong>${question}</strong></p><details><summary aria-label="Ver respuesta modelo: ${question}">Ver respuesta modelo</summary><p>${answer}</p></details></div>`).join("");
+}
+
 function studyPrompts(id,index) {
+  if (id==="meteorizacion" && index===1) {
+    return `<div class="study-prompts inline-prompts" id="preguntas-mecanica"><h3>Posibles preguntas de examen</h3>
+    <p>Practica una pregunta cada vez. Cuando identifiques un mecanismo, explica también qué pista te ha ayudado.</p>
+    ${preguntasMecanica.map(([title,entries])=>`<section><h4>${title}</h4>${promptCards(entries)}</section>`).join("")}</div>`;
+  }
   const entries = studyQuestions[id]
     .map((question,i)=>({question,block:questionPlacement[id][i]}))
     .filter(entry=>entry.block===index).map(entry=>entry.question);
@@ -215,7 +237,7 @@ function studyPrompts(id,index) {
   if (!entries.length) return "";
   const confirmed = id==="meta" && index===3;
   return `<div class="study-prompts inline-prompts"><h3>${confirmed?"Pregunta confirmada por Belén":entries.length===1?"Posible pregunta de examen":"Posibles preguntas de examen"}</h3>
-  ${entries.map(([question,answer])=>`<div class="exam-question"><p><strong>${question}</strong></p><details><summary aria-label="Ver respuesta modelo: ${question}">Ver respuesta modelo</summary><p>${answer}</p></details></div>`).join("")}
+  ${promptCards(entries)}
   ${id==="suelo" && index===1?button("retos","Practicar con perfiles y fotografías"):""}
   ${confirmed?button("serie","Practicar el orden de la serie"):""}
   </div>`;
