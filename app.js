@@ -26,7 +26,7 @@ function stopSpeech() {
 }
 function fillVoices() {
   const voices = synth?.getVoices() || [];
-  $("voice").replaceChildren(new Option("Español automático",""), ...voices
+  $("voice").replaceChildren(new Option("Automática · Google español o Mónica",""), ...voices
     .filter(voice => voice.lang.toLowerCase().startsWith("es"))
     .map(voice => new Option(voice.name + " · " + voice.lang, voice.voiceURI)));
   $("voice").value = state.voice;
@@ -36,9 +36,14 @@ function speak(area = screen) {
   if (!synth) { $("speech-status").textContent = "Lectura en voz alta no disponible en este navegador."; return; }
   stopSpeech();
   const currentRun = speechRun;
-  const voice = synth.getVoices().find(item => item.voiceURI === state.voice)
-    || synth.getVoices().find(item => item.lang.toLowerCase() === "es-es")
-    || synth.getVoices().find(item => item.lang.toLowerCase().startsWith("es"));
+  const voices = synth.getVoices().filter(item=>/^es(?:-|$)/i.test(item.lang));
+  const normalized = name => name.normalize("NFD").replace(/\p{M}/gu,"").toLowerCase();
+  const isSpain = item => item.lang.toLowerCase()==="es-es";
+  const voice = voices.find(item=>item.voiceURI===state.voice)
+    || voices.find(item=>isSpain(item) && /google/.test(normalized(item.name)))
+    || voices.find(item=>isSpain(item) && /\bmonica\b/.test(normalized(item.name)))
+    || voices.find(isSpain)
+    || voices[0];
   const lines = area.querySelectorAll("h1,h2,h3,p,figcaption,legend,.choice,li,.feedback");
   const chunks = Array.from(lines)
     .filter(node => node.innerText.trim() && !node.closest("[hidden]") && (!node.closest("details") || node.closest("details").open) && !node.querySelector("p,li"))
