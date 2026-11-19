@@ -16,7 +16,7 @@ const respuestas = [
  [15,"meta","Describe la serie regional","Escribe el orden completo desde la arcilla y explica qué cambia al alcanzar la anatexia. Usa al menos una pista para reconocer una roca de la serie.","Arcilla → pizarra → filita → esquisto → gneis → granito de anatexia. Con mayor grado, pueden aparecer micas visibles en el esquisto y bandas claras y oscuras en el gneis. La anatexia es fusión parcial y el granito es ígneo porque cristaliza del fundido.","Comprueba las seis posiciones, el aumento de grado y la distinción entre el tramo sólido y la cristalización final."],
  [15,"meta","Compara corneana y milonita","Una roca se encuentra en una aureola junto a una intrusión. Otra se ha deformado intensamente en una gran falla. Propón la roca y el tipo de metamorfismo de cada caso.","En la aureola, la corneana es característica del metamorfismo térmico o de contacto. En la falla, la milonita se asocia al metamorfismo dinámico por deformación intensa.","Nombra ambas rocas y enlaza cada una con el factor y el lugar indicados."],
  [15,"ciclo","Reconstruye un camino del ciclo","Imagina que el cuarzo de un granito se incorpora primero a una arenisca y acaba en una cuarcita. Explica qué procesos conectan las tres rocas.","La meteorización y la erosión liberan y movilizan partículas; estas se transportan y depositan. La diagénesis transforma el sedimento en arenisca. El metamorfismo recristaliza la arenisca rica en cuarzo y origina cuarcita.","Incluye producción y depósito de sedimentos, diagénesis y metamorfismo en estado sólido."],
- [15,"esfuerzos","Distingue pliegue, diaclasa y falla","En A las capas se curvan. En B hay una fractura con los estratos alineados. En C la misma capa queda a distinta altura a ambos lados de una fractura. Identifica las tres estructuras y explica la pista.","A: pliegue, deformación dúctil de las capas. B: diaclasa, fractura sin desplazamiento apreciable. C: falla, fractura con desplazamiento relativo.","Usa en cada caso una pista observable: curvatura, rotura y presencia o ausencia de desplazamiento."],
+ [15,"esfuerzos","Distingue un pliegue y una falla","En A las capas se curvan. En B, una capa queda desplazada a distinta altura a ambos lados de una fractura. Identifica ambas estructuras y explica la pista.","A es un pliegue porque las capas se curvan. B es una falla porque la capa está rota y desplazada.","Usa la curvatura para reconocer el pliegue y el desplazamiento para reconocer la falla."],
  [15,"esfuerzos","Explica los elementos de pliegue y falla","Define charnela, flancos y plano axial. Después define plano de falla, labios y salto.","La charnela es la zona de mayor curvatura y los flancos quedan a ambos lados. El plano axial conecta las charnelas de las capas. El plano de falla es la superficie de rotura, los labios son los bloques y el salto expresa su desplazamiento relativo.","Incluye los seis elementos y usa desplazamiento solo al hablar de la falla."]
 ];
 
@@ -81,11 +81,11 @@ const identificaciones = [
    ["¿Cuál presenta mayor madurez textural?","Muestra A","Los clastos son más pequeños y redondeados en la muestra A."],
    ["¿Cuál presenta clastos más grandes y angulosos?","Muestra B","Los clastos de la muestra B conservan aristas marcadas y son mayores."]
   ]},
- {id:"fallas", tema:15, titulo:"Relaciona cada esfuerzo con una falla", descripcion:"Usa la dirección del movimiento de los bloques.", opciones:["Falla de desgarre","Falla inversa","Falla directa"],
+ {id:"fallas", tema:15, titulo:"Identifica los elementos de una falla", descripcion:"Relaciona cada descripción con un elemento.", opciones:["Labios","Plano de falla","Salto"],
   partes:[
-   ["Distensión · baja el bloque situado sobre el plano inclinado","Falla directa","En la falla directa el bloque superior desciende y el terreno se alarga."],
-   ["Compresión · sube el bloque situado sobre el plano inclinado","Falla inversa","La falla inversa acorta el terreno al elevarse el bloque superior."],
-   ["Cizalla · los bloques se desplazan lateralmente","Falla de desgarre","En el desgarre predomina el movimiento lateral."]
+   ["La superficie por la que han resbalado los bloques.","Plano de falla","El plano de falla es la superficie de rotura y desplazamiento."],
+   ["Los dos bloques separados por la rotura.","Labios","Los labios son los bloques situados a ambos lados del plano de falla."],
+   ["El desplazamiento relativo de los bloques.","Salto","Puedes reconocer el salto comparando la posición de una misma capa a ambos lados."]
   ]}
 ];
 
@@ -122,7 +122,7 @@ const consignasEscritas = [
  ["Escribe la serie en orden desde la arcilla.","Explica qué sucede cuando se alcanza la anatexia.","Da una pista para reconocer una de las rocas de la serie."],
  ["Identifica la roca y el tipo de metamorfismo de la aureola.","Identifica la roca y el tipo de metamorfismo de la zona de falla."],
  ["Explica cómo se obtienen sedimentos a partir del granito.","Indica qué proceso transforma esos sedimentos en arenisca.","Indica qué proceso puede transformar la arenisca en cuarcita."],
- ["Identifica la estructura A y da una pista.","Identifica la estructura B y da una pista.","Identifica la estructura C y da una pista."],
+ ["Identifica la estructura A y da una pista.","Identifica la estructura B y da una pista."],
  ["Define charnela.","Define flancos.","Define plano axial.","Define plano de falla.","Define labios de falla.","Define salto de falla."]
 ];
 
@@ -141,7 +141,7 @@ const contextosEscritos = [
  "La serie empieza en un material arcilloso y continúa a medida que aumenta el grado metamórfico.",
  "Una muestra procede de una aureola junto a una intrusión. Otra se deformó intensamente en una falla.",
  "El cuarzo de un granito acaba primero en una arenisca y luego en una cuarcita.",
- "En A se curvan las capas. En B hay una fractura con las capas alineadas. En C, una capa queda desplazada a ambos lados de la fractura.",
+ "En A se curvan las capas. En B, una capa queda desplazada a ambos lados de la fractura.",
  "Recuerda los elementos de un pliegue y de una falla del esquema del libro."
 ];
 

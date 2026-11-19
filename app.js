@@ -176,7 +176,7 @@ const bookImages = {
   igneas: [["15-enfriamiento","Dónde se forman las rocas ígneas","Corte del volcán que muestra emplazamientos superficiales y profundos.","292"],["15-igneas","Muestras de rocas ígneas","Fotografías de pumita, andesita, obsidiana, basalto, granito, diorita, sienita y gabro.","293"]],
   meta: [["15-aureola","Aureola alrededor de una intrusión","Corte donde el plutón calienta la roca encajante y la transforma a su alrededor.","297"],["15-foliacion","Minerales orientados y foliación","Esquema de la orientación de los minerales planos bajo presión.","298"],["15-metamorficas","Muestras de rocas metamórficas","Fotografías de rocas foliadas y de rocas con estructura granoblástica.","299"]],
   ciclo: [["15-ciclo","Ciclo de las rocas en el libro","Diagrama de los caminos entre magma, rocas y sedimentos.","301"]],
-  esfuerzos: [["15-pliegues","Elementos del pliegue","Corte con capas plegadas, núcleo, charnela, flancos y plano axial.","302"],["15-fallas","Elementos y tipos de falla","Bloques de roca desplazados a lo largo de un plano de fractura.","303"]]
+  esfuerzos: [["15-pliegues","Elementos del pliegue","Corte con capas plegadas, núcleo, charnela, flancos y plano axial.","302"],["15-fallas","Elementos de una falla","Bloques de roca desplazados a lo largo de un plano de fractura.","303"]]
 };
 const studyQuestions = {
   meteorizacion: [
@@ -224,9 +224,9 @@ const studyQuestions = {
     ["Construye un recorrido del ciclo que incluya granito, sedimentos, arenisca y cuarcita.","El granito expuesto se meteoriza y los materiales se movilizan, se transportan y se depositan. La diagénesis puede formar arenisca. Si es rica en cuarzo, el metamorfismo puede transformarla en cuarcita."]
   ],
   esfuerzos: [
-    ["¿Qué distingue un pliegue de una falla y de una diaclasa en un corte?","En el pliegue se curvan las capas. En la falla hay rotura con desplazamiento relativo. En la diaclasa hay una fractura sin desplazamiento apreciable de los bloques."],
+    ["¿Qué distingue un pliegue de una falla en un corte?","En el pliegue se curvan las capas. En la falla hay rotura con desplazamiento relativo."],
     ["Señala en un dibujo la charnela, los flancos, el núcleo y el plano axial.","La charnela es la zona de mayor curvatura. Los flancos están a ambos lados. El núcleo es la zona más interna. El plano axial pasa por las charnelas de las capas plegadas."],
-    ["Identifica el plano de falla, los labios y el salto. Relaciona tres tipos de falla con el esfuerzo que predomina.","El plano de falla es la superficie de rotura, los labios son los bloques y el salto expresa su desplazamiento relativo. La falla directa se asocia a distensión; la inversa, a compresión; y la de desgarre, a cizalla."]
+    ["Identifica el plano de falla, los labios y el salto.","El plano de falla es la superficie de rotura, los labios son los bloques y el salto expresa su desplazamiento relativo."]
   ]
 };
 
@@ -325,9 +325,7 @@ function studyPrompts(id,index) {
 const figureGuides = {
   "15-pliegues": [
     ["Plano axial","La flecha superior izquierda señala el plano que pasa por las charnelas de las capas."],
-    ["Vergencia","La flecha central izquierda marca el ángulo entre el plano axial y la vertical."],
     ["Núcleo","La flecha inferior izquierda señala la zona más interna del pliegue."],
-    ["Buzamiento","La flecha superior derecha marca la inclinación de la capa respecto a la horizontal."],
     ["Flancos","La flecha central derecha señala un lado del pliegue. Hay un flanco a cada lado de la charnela."],
     ["Charnela","La flecha inferior derecha apunta a la zona donde la capa se curva más."]
   ],
@@ -336,17 +334,13 @@ const figureGuides = {
     ["Salto de falla","La flecha de arriba señala el desplazamiento de los bloques. Busca la misma capa a ambos lados y compara su posición."],
     ["Labio hundido","Es el bloque que queda más bajo. Lo indica el recuadro de la izquierda."],
     ["Labio levantado","Es el bloque que queda más alto respecto al otro. Lo indica el recuadro inferior derecho del dibujo principal."],
-    ["Buzamiento","El recuadro inferior izquierdo indica el ángulo entre el plano de falla y la horizontal."],
-    ["Falla directa","En el dibujo superior de la derecha, los bloques se separan por distensión."],
-    ["Falla inversa","En el dibujo central de la derecha, los bloques se comprimen."],
-    ["Falla de desgarre","En el dibujo inferior de la derecha, el desplazamiento es lateral por cizalla."]
   ]
 };
 
 function figureGuide(file) {
   const rows = figureGuides[file];
   if (!rows) return "";
-  return `<ul class="explanation figure-guide" aria-label="Qué señala cada flecha">${rows.map(([term,description])=>`<li><strong>${term}.</strong> ${description}</li>`).join("")}</ul>`;
+  return `<p><strong>Partes que debes reconocer</strong></p><ul class="explanation figure-guide" aria-label="Qué señala cada flecha">${rows.map(([term,description])=>`<li><strong>${term}.</strong> ${description}</li>`).join("")}</ul>`;
 }
 
 function figures(lesson,index) {
