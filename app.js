@@ -167,7 +167,7 @@ const studyQuestions = {
     ["Una muestra está junto a una intrusión y otra procede de una zona de falla con deformación intensa. ¿Qué tipos de metamorfismo y qué rocas son compatibles?","La corneana es característica del metamorfismo de contacto junto a una intrusión. Una milonita se asocia a la deformación intensa en una zona de falla. El metamorfismo regional afecta zonas extensas."]
   ],
   ciclo: [
-    ["¿Qué caracteriza a los silicatos? Pon el ejemplo ígneo y el metamórfico destacados en clase.","El silicio y el oxígeno son componentes fundamentales. El olivino aparece en rocas como la peridotita y algunos basaltos. Los granates pueden aparecer en rocas metamórficas."],
+    ["¿Qué caracteriza a los silicatos? Pon el ejemplo ígneo y el metamórfico destacados en clase.","El silicio y el oxígeno son componentes fundamentales. El olivino aparece en rocas magmáticas. Los granates pueden aparecer en rocas metamórficas."],
     ["En el ciclo de las rocas, explica cómo se pasa de sedimento a roca sedimentaria, de roca sólida a metamórfica y de magma a roca ígnea.","El sedimento se convierte en roca sedimentaria por diagénesis. Una roca sólida puede transformarse por metamorfismo. El magma forma roca ígnea al enfriarse y solidificarse."],
     ["Construye un recorrido del ciclo que incluya granito, sedimentos, arenisca y cuarcita.","El granito expuesto se meteoriza y los materiales se movilizan, se transportan y se depositan. La diagénesis puede formar arenisca. Si es rica en cuarzo, el metamorfismo puede transformarla en cuarcita."]
   ],
