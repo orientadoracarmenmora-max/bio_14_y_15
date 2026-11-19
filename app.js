@@ -128,7 +128,7 @@ const bookImages = {
 const studyQuestions = {
   meteorizacion: [
     ["¿Qué es la meteorización? Explica en qué se diferencia de la erosión.","La meteorización fragmenta una roca o altera sus minerales en el lugar donde está. La erosión retira y moviliza materiales, que pueden proceder de la meteorización."],
-    ["Algunos feldespatos se transforman en minerales de arcilla. ¿Qué mecanismo explica el cambio? ¿Y si una raíz ensancha una grieta?","La hidrólisis altera químicamente algunos feldespatos. La raíz actúa como cuña, un mecanismo físico de meteorización biológica."]
+
   ],
   suelo: [
     ["Explica cómo influyen el clima, el tiempo, la pendiente y los seres vivos en la formación de un suelo.","El clima influye en la alteración y la actividad biológica. Con tiempo pueden desarrollarse horizontes. Una pendiente fuerte facilita la pérdida de detritos. Los organismos mezclan el suelo y aportan materia orgánica."],
@@ -183,7 +183,7 @@ const figurePlacement = {
 };
 
 const questionPlacement = {
-  meteorizacion:[0,2], suelo:[0,1,2,4], sedimentos:[0,2,3,4],
+  meteorizacion:[0], suelo:[0,1,2,4], sedimentos:[0,2,3,4],
   sedimentarias:[0,1,4], magma:[0,2,3,4,6], igneas:[0,3,4],
   meta:[0,3,4,5], ciclo:[1,2,3], esfuerzos:[1,2,3]
 };
@@ -219,15 +219,42 @@ const preguntasMecanica = [
     ["El agua penetra en una grieta y durante la noche se congela. Con el tiempo, la grieta se ensancha. ¿Qué mecanismo actúa? Justifica tu respuesta.","Gelifracción. La pista es el aumento de volumen del agua al congelarse dentro de la grieta."]
   ]]
 ];
+const preguntasQuimica = [
+  ["Te dan el nombre. Explica qué ocurre",[
+    ["¿En qué consiste la oxidación?","Algunos minerales reaccionan con el oxígeno. Pueden formarse óxidos e hidróxidos."],
+    ["¿En qué consiste la disolución?","Un mineral soluble, como la halita, se separa en iones que pasan al agua."],
+    ["¿En qué consiste la carbonatación?","El agua con dióxido de carbono facilita la disolución de la calcita de rocas como la caliza."],
+    ["¿En qué consiste la hidrólisis?","El agua altera minerales como los feldespatos. Pueden formarse minerales de arcilla."]
+  ]],
+  ["Te dan las características. Identifica el mecanismo",[
+    ["En una caliza, el agua con dióxido de carbono va disolviendo la calcita. ¿Qué mecanismo actúa?","Carbonatación. La pista es la acción del agua con dióxido de carbono sobre la calcita."],
+    ["El feldespato cambia y se forman minerales de arcilla. ¿Qué mecanismo puede explicarlo?","Hidrólisis. La pista es la alteración del feldespato y la formación de minerales de arcilla."],
+    ["Un mineral reacciona con el oxígeno y aparecen óxidos. ¿Qué mecanismo actúa?","Oxidación. La pista es la reacción del mineral con el oxígeno."],
+    ["El agua entra en contacto con halita y sus iones pasan al agua. ¿Qué mecanismo actúa?","Disolución. La pista es que un mineral soluble se separa en iones en el agua."]
+  ]]
+];
+const preguntasBiologica = [
+  ["Te dan el nombre. Explica qué ocurre",[
+    ["¿En qué consiste la meteorización biológica? Pon un ejemplo.","Es la meteorización debida a los seres vivos. Por ejemplo, una raíz crece en una grieta y la ensancha por efecto de cuña."]
+  ]],
+  ["Te dan las características. Identifica el proceso",[
+    ["Una raíz crece dentro de una grieta y la ensancha. ¿Qué tipo de meteorización es? ¿Cómo actúa la raíz?","Es meteorización biológica. La raíz actúa físicamente como una cuña."],
+    ["El dióxido de carbono de la respiración y la descomposición favorece la alteración de una caliza. Explica cómo intervienen los seres vivos.","Es un ejemplo de meteorización biológica por acción química. El dióxido de carbono favorece la carbonatación."]
+  ]]
+];
+const gruposMeteorizacion = [null,preguntasMecanica,preguntasQuimica,preguntasBiologica];
+const examStar = '<span aria-hidden="true">★ </span>';
+
 function promptCards(entries) {
   return entries.map(([question,answer])=>`<div class="exam-question"><p><strong>${question}</strong></p><details><summary aria-label="Ver respuesta modelo: ${question}">Ver respuesta modelo</summary><p>${answer}</p></details></div>`).join("");
 }
 
 function studyPrompts(id,index) {
-  if (id==="meteorizacion" && index===1) {
-    return `<div class="study-prompts inline-prompts" id="preguntas-mecanica"><h3>Posibles preguntas de examen</h3>
-    <p>Practica una pregunta cada vez. Cuando identifiques un mecanismo, explica también qué pista te ha ayudado.</p>
-    ${preguntasMecanica.map(([title,entries])=>`<section><h4>${title}</h4>${promptCards(entries)}</section>`).join("")}</div>`;
+  if (id==="meteorizacion" && gruposMeteorizacion[index]) {
+    const anchors = ["","preguntas-mecanica","preguntas-quimica","preguntas-biologica"];
+    return `<div class="study-prompts inline-prompts" id="${anchors[index]}"><h3>${examStar}Posibles preguntas de examen</h3>
+    <p>Cuando identifiques un proceso, explica también qué pista te ha ayudado.</p>
+    ${gruposMeteorizacion[index].map(([title,entries])=>`<section><h4>${title}</h4>${promptCards(entries)}</section>`).join("")}</div>`;
   }
   const entries = studyQuestions[id]
     .map((question,i)=>({question,block:questionPlacement[id][i]}))
@@ -236,7 +263,7 @@ function studyPrompts(id,index) {
   if (extra) entries.push(extra);
   if (!entries.length) return "";
   const confirmed = id==="meta" && index===3;
-  return `<div class="study-prompts inline-prompts"><h3>${confirmed?"Pregunta confirmada por Belén":entries.length===1?"Posible pregunta de examen":"Posibles preguntas de examen"}</h3>
+  return `<div class="study-prompts inline-prompts"><h3>${examStar}${confirmed?"Pregunta confirmada por Belén":entries.length===1?"Posible pregunta de examen":"Posibles preguntas de examen"}</h3>
   ${promptCards(entries)}
   ${id==="suelo" && index===1?button("retos","Practicar con perfiles y fotografías"):""}
   ${confirmed?button("serie","Practicar el orden de la serie"):""}
@@ -256,7 +283,7 @@ function lessonBody(lesson,readButtons=false) {
     : flow(lesson.esquema);
   const listen = title => readButtons ? speaker("Escuchar: "+title,"data-read") : "";
   return `<p class="muted">Libro · pp. ${lesson.paginas}</p>
-  ${readButtons?'<p class="study-note">Los rótulos de posible pregunta indican contenidos para practicar. La serie regional se marca como confirmada porque Belén lo dijo expresamente.</p>':""}
+  ${readButtons?'<p class="study-note">★ señala contenidos importantes para el examen según las indicaciones de Belén. Los enunciados son de práctica. La serie regional está confirmada.</p>':""}
   <section class="notice"><div class="block-head"><h2>Idea principal</h2>${listen("Idea principal")}</div><div class="explanation">${explanation(lesson.idea)}</div></section>
   ${lesson.bloques.map(([title,body],index) => `<section class="block"><div class="block-head"><h2>${title}</h2>${listen(title)}</div><div class="explanation">${explanation(body)}</div>${readButtons ? figures(lesson,index)+studyPrompts(lesson.id,index) : ""}</section>`).join("")}
   <section class="block"><h2>${isComparison ? "Relaciones clave" : "Esquema de repaso"}</h2>${diagram}${visual[lesson.id] || ""}</section>
