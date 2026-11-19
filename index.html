@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Repaso interactivo de procesos geológicos externos e internos para 1.º de Bachillerato.">
+<title>Procesos geológicos · Temas 14 y 15</title>
+<link rel="stylesheet" href="./estilo.css">
+<script defer src="./tema.js"></script>
+<script defer src="./externos.js"></script>
+<script defer src="./actividades.js"></script>
+<script defer src="./app.js"></script>
+</head>
+<body>
+<a class="skip" href="#contenido">Saltar al contenido</a>
+<header class="top"><a href="#inicio" class="brand">Cuaderno de Geología</a>
+<details class="settings"><summary>Accesibilidad</summary><div class="controls">
+<div><label for="size">Letra</label><select id="size"><option value="100">Normal</option><option value="120">Grande</option><option value="145">Muy grande</option></select></div>
+<label><input type="checkbox" id="contrast"> Alto contraste</label>
+<div><label for="voice">Voz</label><select id="voice"><option value="">Español automático</option></select></div>
+<div><label for="rate">Velocidad</label><select id="rate"><option value=".75">0,75×</option><option value=".9">0,9×</option><option selected value="1">1×</option><option value="1.15">1,15×</option></select></div>
+</div></details></header>
+<div class="layout">
+<nav aria-label="Navegación del tema"><a href="#inicio">Inicio</a><a href="#externos">Tema 14 · Externos</a><a href="#internos">Tema 15 · Internos</a><a href="#examen">Qué entra</a><a href="#retos">Actividades de examen</a><a href="#serie">Ordenar la serie</a><a href="#practica">Autoevaluación</a><a href="#repaso">Repaso y progreso</a></nav>
+<main id="contenido" tabindex="-1">
+<div class="tools"><button id="speak">Leer pantalla</button><button id="stop">Detener lectura</button><button id="print">Imprimir apuntes</button><span id="speech-status" role="status"></span></div>
+<div id="screen"></div>
+<div id="printout"></div>
+<noscript>Activa JavaScript para abrir las explicaciones y realizar los ejercicios.</noscript>
+</main>
+</div>
+</body>
+</html>
