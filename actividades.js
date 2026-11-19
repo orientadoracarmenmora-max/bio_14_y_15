@@ -161,6 +161,8 @@ const preguntasSimulacro = [
   modelo:"La textura es porfídica. La pista es que destacan cristales grandes dentro de una matriz mucho más fina."},
  {tema:15,pregunta:"Escribe en orden la serie metamórfica desde la arcilla hasta el granito de anatexia. Explica qué sucede al alcanzarse la anatexia.",
   modelo:"Arcilla → pizarra → filita → esquisto → gneis → granito de anatexia. La anatexia es la fusión parcial de la roca. El fundido puede cristalizar y originar granito."},
- {tema:15,pregunta:"En un corte, una misma capa queda desplazada a ambos lados de una superficie de rotura. Identifica la estructura y distingue plano de falla, labios y salto.",
-  modelo:"Es una falla. El plano de falla es la superficie de rotura. Los labios son los bloques a ambos lados. El salto indica el desplazamiento relativo."}
+ {tema:15,corte:"pliegue",pregunta:"Observa el corte 1. Nombra la estructura y explica qué rasgo te permite reconocerla. Identifica y define los elementos A, B, C y D.",
+  modelo:"Es un pliegue porque las capas se curvan sin romperse. A es la charnela, donde la capa se curva más. B señala un flanco, uno de los lados del pliegue. C representa el plano axial, que pasa por las charnelas de las capas. D es el núcleo, la zona más interna del pliegue."},
+ {tema:15,corte:"falla",pregunta:"Observa el corte 2. Nombra la estructura y explica qué rasgo te permite reconocerla. Identifica y define los elementos A, B y C.",
+  modelo:"Es una falla porque hay una rotura con desplazamiento de las capas. A es el plano de falla, la superficie de rotura por la que se desplazaron los bloques. B señala los labios, los dos bloques a ambos lados de la falla. C señala el salto de falla, el desplazamiento relativo que se aprecia al comparar la misma capa a ambos lados."}
 ];

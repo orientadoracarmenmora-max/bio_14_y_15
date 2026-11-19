@@ -715,6 +715,42 @@ function renderGuidedChallenge(item,index,illustration) {
   showExample();
 }
 
+const mockCuts = {
+  pliegue: {
+    title:"Corte 1",
+    description:"Varias capas se curvan. A apunta a la parte de arriba donde una capa se curva más. B apunta a un lado inclinado. C apunta a la línea vertical discontinua. D señala la zona interior, bajo las capas curvadas.",
+    layers:`<path d="M22 171C85 170 111 58 180 58S275 170 338 171V221H22Z" fill="#dbb685"/>
+      <path d="M22 187C85 186 111 79 180 79S275 186 338 187" fill="none" stroke="#8a4f35" stroke-width="8"/>
+      <path d="M22 205C85 204 111 101 180 101S275 204 338 205" fill="none" stroke="#5f7863" stroke-width="8"/>
+      <path d="M22 221C85 220 111 124 180 124S275 220 338 221" fill="none" stroke="#795133" stroke-width="7"/>
+      <path d="M180 34V145" stroke="#23374b" stroke-width="2" stroke-dasharray="5 5"/>`,
+    marks:[["A",94,46,174,58],["B",288,72,248,121],["C",233,23,180,39],["D",270,169,180,156]]
+  },
+  falla: {
+    title:"Corte 2",
+    description:"Las capas están interrumpidas y desplazadas a lo largo de una línea inclinada. A señala la línea de rotura. B señala los dos bloques a ambos lados. C señala la separación vertical entre dos líneas de referencia de la misma capa.",
+    layers:`<path d="M22 52H215L151 218H22Z" fill="#ecd1a6"/>
+      <path d="M215 52H338V218H151Z" fill="#ecd1a6"/>
+      <path d="M22 92H200M185 130H338" stroke="#87543a" stroke-width="10"/>
+      <path d="M22 136H183M168 174H338" stroke="#5f7863" stroke-width="12"/>
+      <path d="M22 179H167M152 217H338" stroke="#87543a" stroke-width="8"/>
+      <path d="M215 52L151 218" stroke="#26343a" stroke-width="4"/>
+      <path d="M201 92H301M185 130H301" stroke="#26343a" stroke-width="1.7" stroke-dasharray="5 4"/>
+      <path d="M292 92v38m-5-38h10m-10 38h10" stroke="#26343a" stroke-width="2.5" fill="none"/>`,
+    marks:[["A",230,37,207,74],["B",82,34,82,72],["B",279,196,264,158],["C",324,106,292,110]]
+  }
+};
+function mockCut(key) {
+  const {title,description,layers,marks} = mockCuts[key];
+  return `<figure class="mock-cut">
+    <svg viewBox="0 0 360 240" role="img" aria-label="${description}">
+      ${layers}
+      ${marks.map(([label,x,y,endX,endY])=>`<path d="M${x} ${y}L${endX} ${endY}" stroke="#27323a" stroke-width="2" fill="none"/><circle cx="${endX}" cy="${endY}" r="3" fill="#27323a"/><circle cx="${x}" cy="${y}" r="13" fill="#fffdf8" stroke="#27323a" stroke-width="2"/><text x="${x}" y="${y}" dominant-baseline="central" text-anchor="middle" fill="#23232b" font-size="15" font-weight="700">${label}</text>`).join("")}
+    </svg>
+    <figcaption>${title} · Esquema de examen</figcaption>
+  </figure>`;
+}
+
 const mockDraft = new Map();
 let mockSubmitted = false;
 function renderMock() {
@@ -723,10 +759,10 @@ function renderMock() {
     <img src="./14-podsol.webp" alt="${photo.imagen[1]}">
     ${photo.marcas.map(([number,x,y])=>`<span aria-hidden="true" style="--x:${x};--y:${y}">${number}</span>`).join("")}</div>
     <figcaption>Perfil del suelo. Libro, p. 271.</figcaption></figure>`;
-  screen.innerHTML += `<p>Ocho preguntas de los temas 14 y 15. Responde con los términos del libro. La corrección aparece al entregar.</p>
-    <form id="mock-form"><ol class="mock-list">${preguntasSimulacro.map(({tema,pregunta,foto,campos},i)=>`<li class="block">
+  screen.innerHTML += `<p>${preguntasSimulacro.length} preguntas de los temas 14 y 15. Responde con los términos del libro. La corrección aparece al entregar.</p>
+    <form id="mock-form"><ol class="mock-list">${preguntasSimulacro.map(({tema,pregunta,foto,campos,corte},i)=>`<li class="block">
     <section><div class="block-head"><h2>Pregunta ${i+1} · Tema ${tema}</h2>${speaker("Escuchar la pregunta "+(i+1),"data-read")}</div>
-    <p id="mock-prompt-${i}">${pregunta}</p>${foto ? numbered : ""}
+    <p id="mock-prompt-${i}">${pregunta}</p>${foto ? numbered : ""}${corte ? mockCut(corte) : ""}
     ${(campos||[]).map(([label,options],j)=>`<div class="match-row"><label for="mock-${i}-${j}">${label}</label><select data-mock id="mock-${i}-${j}">
     <option value="">Elige una opción</option>${options.map(option=>`<option>${option}</option>`).join("")}</select></div>`).join("")}
     <label for="mock-written-${i}">${foto?"Tu justificación":"Tu respuesta"}</label><textarea data-mock id="mock-written-${i}" aria-describedby="mock-prompt-${i}" rows="3"></textarea>
