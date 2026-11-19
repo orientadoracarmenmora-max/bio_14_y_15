@@ -322,11 +322,38 @@ function studyPrompts(id,index) {
   ${confirmed?button("serie","Practicar el orden de la serie"):""}
   </div>`;
 }
+const figureGuides = {
+  "15-pliegues": [
+    ["Plano axial","La flecha superior izquierda señala el plano que pasa por las charnelas de las capas."],
+    ["Vergencia","La flecha central izquierda marca el ángulo entre el plano axial y la vertical."],
+    ["Núcleo","La flecha inferior izquierda señala la zona más interna del pliegue."],
+    ["Buzamiento","La flecha superior derecha marca la inclinación de la capa respecto a la horizontal."],
+    ["Flancos","La flecha central derecha señala un lado del pliegue. Hay un flanco a cada lado de la charnela."],
+    ["Charnela","La flecha inferior derecha apunta a la zona donde la capa se curva más."]
+  ],
+  "15-fallas": [
+    ["Plano de falla","La flecha superior izquierda señala la superficie inclinada por la que se han desplazado los bloques."],
+    ["Salto de falla","La flecha de arriba señala el desplazamiento de los bloques. Busca la misma capa a ambos lados y compara su posición."],
+    ["Labio hundido","Es el bloque que queda más bajo. Lo indica el recuadro de la izquierda."],
+    ["Labio levantado","Es el bloque que queda más alto respecto al otro. Lo indica el recuadro inferior derecho del dibujo principal."],
+    ["Buzamiento","El recuadro inferior izquierdo indica el ángulo entre el plano de falla y la horizontal."],
+    ["Falla directa","En el dibujo superior de la derecha, los bloques se separan por distensión."],
+    ["Falla inversa","En el dibujo central de la derecha, los bloques se comprimen."],
+    ["Falla de desgarre","En el dibujo inferior de la derecha, el desplazamiento es lateral por cizalla."]
+  ]
+};
+
+function figureGuide(file) {
+  const rows = figureGuides[file];
+  if (!rows) return "";
+  return `<ul class="explanation figure-guide" aria-label="Qué señala cada flecha">${rows.map(([term,description])=>`<li><strong>${term}.</strong> ${description}</li>`).join("")}</ul>`;
+}
+
 function figures(lesson,index) {
   const related = bookImages[lesson.id].filter((_,i)=>figurePlacement[lesson.id][i]===index);
   if (!related.length) return "";
   return `<div class="book-figures">${related.map(([file,title,alt,page])=>`<figure class="book-figure"><a href="./${file}.webp?v=14" aria-label="Ampliar en otra pestaña: ${title}" target="_blank" rel="noopener">
-    <img src="./${file}.webp?v=14" alt="${alt}" loading="lazy"></a><figcaption><strong>${title}.</strong> Libro, p. ${page}.</figcaption></figure>`).join("")}</div>`;
+    <img src="./${file}.webp?v=14" alt="${alt}" loading="lazy"></a><figcaption><strong>${title}.</strong> Libro, p. ${page}.${figureGuide(file)}</figcaption></figure>`).join("")}</div>`;
 }
 
 function lessonBody(lesson,readButtons=false) {
