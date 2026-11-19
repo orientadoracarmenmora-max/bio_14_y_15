@@ -19,6 +19,14 @@ const synth = window.speechSynthesis;
 let utterance;
 let speechRun = 0;
 let speechTimer;
+let activeSpeaker;
+function clearActiveSpeaker() {
+  if (!activeSpeaker) return;
+  activeSpeaker.setAttribute("aria-pressed","false");
+  activeSpeaker.title = activeSpeaker.getAttribute("aria-label");
+  activeSpeaker.querySelector("span").textContent = "🔊";
+  activeSpeaker = null;
+}
 const sentencePause = 450;
 const endsSentence = part => /[.!?][»”"')\]]*$/u.test(part)
   && !/\b(?:p|pp|pág|págs|fig|núm|aprox|etc)\.$/iu.test(part);
@@ -44,6 +52,7 @@ function stopSpeech() {
   clearTimeout(speechTimer);
   synth?.cancel();
   utterance = null;
+  clearActiveSpeaker();
   $("speech-status").textContent = "";
 }
 function fillVoices() {
@@ -54,10 +63,18 @@ function fillVoices() {
   $("voice").value = state.voice;
   if ($("voice").selectedIndex < 0) $("voice").selectedIndex = 0;
 }
-function speak(area = screen) {
+function speak(area,trigger) {
+  if (activeSpeaker === trigger) {
+    stopSpeech();
+    return;
+  }
   if (!synth) { $("speech-status").textContent = "Lectura en voz alta no disponible en este navegador."; return; }
   stopSpeech();
   const currentRun = speechRun;
+  activeSpeaker = trigger;
+  trigger.setAttribute("aria-pressed","true");
+  trigger.title = "Detener lectura";
+  trigger.querySelector("span").textContent = "■";
   const voices = synth.getVoices().filter(item=>/^es(?:-|$)/i.test(item.lang));
   const normalized = name => name.normalize("NFD").replace(/\p{M}/gu,"").toLowerCase();
   const isSpain = item => item.lang.toLowerCase()==="es-es";
@@ -73,7 +90,7 @@ function speak(area = screen) {
   let index = 0;
   function next() {
     if (currentRun !== speechRun) return;
-    if (index === chunks.length) { $("speech-status").textContent = "Lectura terminada."; return; }
+    if (index === chunks.length) { clearActiveSpeaker(); $("speech-status").textContent = "Lectura terminada."; return; }
     const chunk = chunks[index++];
     utterance = new SpeechSynthesisUtterance(chunk);
     utterance.lang = voice?.lang || "es-ES";
@@ -85,7 +102,9 @@ function speak(area = screen) {
       else next();
     };
     utterance.onerror = () => {
-      if (currentRun === speechRun) $("speech-status").textContent = "No se pudo reproducir. Prueba otra voz del dispositivo.";
+      if (currentRun !== speechRun) return;
+      clearActiveSpeaker();
+      $("speech-status").textContent = "No se pudo reproducir. Prueba otra voz del dispositivo.";
     };
     synth.speak(utterance);
   }
@@ -110,7 +129,7 @@ for (const id of ["size","contrast","voice","rate"]) {
 settings();
 fillVoices();
 synth?.addEventListener("voiceschanged",fillVoices);
-$("speak").onclick = () => speak();
+$("speak").onclick = event => speak(screen,event.currentTarget);
 $("stop").onclick = stopSpeech;
 $("print").onclick = () => window.print();
 document.querySelector(".skip").addEventListener("click", event => {
@@ -119,7 +138,7 @@ document.querySelector(".skip").addEventListener("click", event => {
 });
 
 const button = (href,label,primary=false) => `<a class="button ${primary ? "primary" : ""}" href="#${href}">${label}</a>`;
-const speaker = (label,attributes="") => `<button type="button" class="speaker" aria-label="${label}" title="${label}" ${attributes}><span aria-hidden="true">🔊</span></button>`;
+const speaker = (label,attributes="") => `<button type="button" class="speaker" aria-pressed="false" aria-label="${label}" title="${label}" ${attributes}><span aria-hidden="true">🔊</span></button>`;
 const explanation = content => content.split(/(?<=[.!?])\s+(?=(?:<strong>)?[A-ZÁÉÍÓÚÜÑ¿¡])/u)
   .map(sentence => `<p>${sentence}</p>`).join("");
 const flow = items => `<ol class="diagram">${items.map(item => `<li>${item}</li>`).join("")}</ol>`;
@@ -342,7 +361,7 @@ ${identificaciones.map(item=>`<section class="block"><h3>Tema ${item.tema} · ${
 <h2>Soluciones de la práctica escrita</h2>${respuestas.map(([, ,title,,answer])=>`<section class="block"><h3>${title}</h3><p>${answer}</p></section>`).join("")}`;
 screen.addEventListener("click",event => {
   const trigger = event.target.closest("button[data-read]");
-  if (trigger) speak(trigger.closest("section"));
+  if (trigger) speak(trigger.closest("section"),trigger);
 });
 
 let ordering = [3,5,0,4,1,2];
