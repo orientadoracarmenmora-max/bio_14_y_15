@@ -409,7 +409,7 @@ function renderChallenges() {
     <label for="challenge-choice">Actividad <select id="challenge-choice"></select></label>
   </div>
   <div id="challenges"></div>
-  <div class="actions">${button("practica","Autoevaluación")} ${button("serie","Ordenar la serie regional")}</div>`;
+  <div class="actions">${button("simulacro","Simulacro de los dos temas",true)} ${button("practica","Autoevaluación")} ${button("serie","Ordenar la serie regional")}</div>`;
   const choices = $("challenge-choice");
   function refresh() {
     renderChallengeList(choices.value,$("challenge-mode").value==="guided");
@@ -592,8 +592,57 @@ function renderGuidedChallenge(item,index,illustration) {
   showExample();
 }
 
+const mockDraft = new Map();
+let mockSubmitted = false;
+function renderMock() {
+  const photo = identificaciones.find(item=>item.id==="perfil-foto");
+  const numbered = `<figure class="book-figure photo-exercise"><div class="numbered-photo">
+    <img src="./14-podsol.webp" alt="${photo.imagen[1]}">
+    ${photo.marcas.map(([number,x,y])=>`<span aria-hidden="true" style="--x:${x};--y:${y}">${number}</span>`).join("")}</div>
+    <figcaption>Perfil del suelo. Libro, p. 271.</figcaption></figure>`;
+  screen.innerHTML += `<p>Ocho preguntas de los temas 14 y 15. Responde con los términos del libro. La corrección aparece al entregar.</p>
+    <form id="mock-form"><ol class="mock-list">${preguntasSimulacro.map(({tema,pregunta,foto,campos},i)=>`<li class="block">
+    <section><div class="block-head"><h2>Pregunta ${i+1} · Tema ${tema}</h2>${speaker("Escuchar la pregunta "+(i+1),"data-read")}</div>
+    <p id="mock-prompt-${i}">${pregunta}</p>${foto ? numbered : ""}
+    ${(campos||[]).map(([label,options],j)=>`<div class="match-row"><label for="mock-${i}-${j}">${label}</label><select data-mock id="mock-${i}-${j}">
+    <option value="">Elige una opción</option>${options.map(option=>`<option>${option}</option>`).join("")}</select></div>`).join("")}
+    <label for="mock-written-${i}">${foto?"Tu justificación":"Tu respuesta"}</label><textarea data-mock id="mock-written-${i}" aria-describedby="mock-prompt-${i}" rows="3"></textarea>
+    </section></li>`).join("")}</ol><button class="primary">Entregar y ver la corrección</button></form><div id="mock-result"></div>`;
+  const form = $("mock-form");
+  for (const field of form.querySelectorAll("[data-mock]")) {
+    field.value = mockDraft.get(field.id) || "";
+    field.readOnly = mockSubmitted;
+    if (field.tagName==="SELECT") field.disabled = mockSubmitted;
+    field.addEventListener("input",()=>mockDraft.set(field.id,field.value));
+  }
+  function showResult(focus) {
+    form.querySelector("button[type=submit], :scope > button").hidden = true;
+    $("mock-result").innerHTML = `<section class="notice"><h2 tabindex="-1">Corrección del simulacro</h2>
+    <p>Compara tus respuestas escritas con el modelo. En la imagen se comprueba también cada horizonte que elegiste.</p></section>
+    <ol class="mock-list">${preguntasSimulacro.map(({modelo,campos},i)=>`<li class="block"><h3>Pregunta ${i+1}</h3>
+    ${(campos||[]).map(([label,,answer],j)=>`<p><strong>${label} · ${mockDraft.get("mock-"+i+"-"+j)===answer?"Correcto":"Revisa"}.</strong> ${answer}.</p>`).join("")}
+    <p><strong>Tu respuesta</strong></p><p id="mock-reply-${i}"></p><p><strong>Respuesta modelo</strong></p><p>${modelo}</p></li>`).join("")}</ol>
+    <button id="mock-restart">Hacer otro intento</button>`;
+    preguntasSimulacro.forEach((_,i)=>{ $("mock-reply-"+i).textContent=mockDraft.get("mock-written-"+i)?.trim() || "Sin respuesta escrita."; });
+    $("mock-restart").onclick = () => { mockDraft.clear(); mockSubmitted=false; render(true); };
+    if (focus) $("mock-result").querySelector("h2").focus();
+  }
+  form.onsubmit = event => {
+    event.preventDefault();
+    if (mockSubmitted) return;
+    mockSubmitted = true;
+    for (const field of form.querySelectorAll("[data-mock]")) {
+      mockDraft.set(field.id,field.value);
+      if (field.tagName==="SELECT") field.disabled = true;
+      else field.readOnly = true;
+    }
+    showResult(true);
+  };
+  if (mockSubmitted) showResult(false);
+}
+
 let beginReview = false;
-const titles = {inicio:"Procesos geológicos",externos:"Procesos geológicos externos",internos:"Procesos geológicos internos",retos:"Actividades de examen",examen:"Qué entra en el examen",serie:"Ordena la serie regional",practica:"Autoevaluación",repaso:"Repaso y progreso"};
+const titles = {inicio:"Procesos geológicos",externos:"Procesos geológicos externos",internos:"Procesos geológicos internos",retos:"Actividades de examen",simulacro:"Simulacro de examen",examen:"Qué entra en el examen",serie:"Ordena la serie regional",practica:"Autoevaluación",repaso:"Repaso y progreso"};
 function render(focus) {
   stopSpeech();
   const hash = location.hash.slice(1);
@@ -617,6 +666,7 @@ function render(focus) {
     screen.innerHTML += `<p class="kicker">Tema ${page==="externos"?14:15}</p><div class="grid">${group.map(item=>`<section class="card"><h2><a href="#${item.id}">${item.titulo}</a></h2><div class="explanation">${explanation(item.idea)}</div></section>`).join("")}</div>`;
   }
   if (page === "retos") renderChallenges();
+  if (page === "simulacro") renderMock();
   if (page === "serie") sortPage();
   if (page === "practica") {
     quizMenu();

@@ -144,3 +144,23 @@ const contextosEscritos = [
  "En A se curvan las capas. En B hay una fractura con las capas alineadas. En C, una capa queda desplazada a ambos lados de la fractura.",
  "Recuerda los elementos de un pliegue y de una falla del esquema del libro."
 ];
+
+const preguntasSimulacro = [
+ {tema:14,pregunta:"En una roca, las diferencias de temperatura producen dilataciones desiguales y acaban abriendo grietas. Nombra el mecanismo y explica por qué es meteorización mecánica.",
+  modelo:"Es termoclastia. La dilatación y la contracción desiguales producen esfuerzos que fracturan la roca sin cambiar su composición."},
+ {tema:14,pregunta:"Observa la fotografía del suelo. Identifica el horizonte que señala cada número y justifica una de tus elecciones.",
+  foto:true, campos:[["Número 1",["Horizonte O","Horizonte A","Horizonte B","Horizonte C"],"Horizonte A"],["Número 2",["Horizonte O","Horizonte A","Horizonte B","Horizonte C"],"Horizonte B"]],
+  modelo:"El 1 señala el horizonte A, la franja clara de lavado. El 2 señala el horizonte B, situado debajo, donde se acumulan parte de los materiales arrastrados."},
+ {tema:14,pregunta:"La corriente de un río pierde energía y los clastos caen al fondo. ¿Qué forma de sedimentación es? Explica en qué se diferencia de la acreción cinética.",
+  modelo:"Es depósito gravitacional. Los clastos caen al fondo cuando la corriente pierde energía. En la acreción cinética, los clastos en movimiento se acumulan al tropezar con un obstáculo."},
+ {tema:14,pregunta:"En una roca sedimentaria ves cantos redondeados de 7 mm unidos por cemento. Identifica la roca y justifica tu respuesta con dos rasgos.",
+  modelo:"Es una pudinga. Es un conglomerado porque los clastos superan los 2 mm. Los cantos redondeados permiten distinguir la pudinga de una brecha."},
+ {tema:15,pregunta:"Explica qué les sucede a la presión y a los gases cuando asciende el magma. Nombra un producto líquido y uno sólido de una erupción.",
+  modelo:"Al ascender el magma, disminuye la presión. Parte de los gases disueltos forma burbujas que se expanden. La lava es el producto líquido y el lapilli es un ejemplo de producto sólido."},
+ {tema:15,pregunta:"Una roca tiene cristales grandes en una matriz de grano muy fino. Nombra la textura y explica qué rasgo permite reconocerla.",
+  modelo:"La textura es porfídica. La pista es que destacan cristales grandes dentro de una matriz mucho más fina."},
+ {tema:15,pregunta:"Escribe en orden la serie metamórfica desde la arcilla hasta el granito de anatexia. Explica qué sucede al alcanzarse la anatexia.",
+  modelo:"Arcilla → pizarra → filita → esquisto → gneis → granito de anatexia. La anatexia es la fusión parcial de la roca. El fundido puede cristalizar y originar granito."},
+ {tema:15,pregunta:"En un corte, una misma capa queda desplazada a ambos lados de una superficie de rotura. Identifica la estructura y distingue plano de falla, labios y salto.",
+  modelo:"Es una falla. El plano de falla es la superficie de rotura. Los labios son los bloques a ambos lados. El salto indica el desplazamiento relativo."}
+];
