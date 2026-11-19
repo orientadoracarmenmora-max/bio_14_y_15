@@ -141,6 +141,8 @@ const button = (href,label,primary=false) => `<a class="button ${primary ? "prim
 const speaker = (label,attributes="") => `<button type="button" class="speaker" aria-pressed="false" aria-label="${label}" title="${label}" ${attributes}><span aria-hidden="true">🔊</span></button>`;
 const explanation = content => content.split(/(?<=[.!?])\s+(?=(?:<strong>)?[A-ZÁÉÍÓÚÜÑ¿¡])/u)
   .map(sentence => `<p>${sentence}</p>`).join("");
+const modelTerms = /(?<![\p{L}])(?:formación de magma|estado sólido|fusión parcial|falla transformante|esfuerzos tectónicos|presión litostática|esfuerzos dirigidos|cámara magmática|colada de lava|metamorfismo de contacto|metamorfismo dinámico|metamorfismo regional|estructura granoblástica|madurez textural|depósito gravitacional|acreción cinética|plano de falla|plano axial|horizonte [OABC]|roca madre|granito de anatexia|minerales de arcilla|carbonato de calcio|magmatismo|metamorfismo|subducción|compresión|cizalla|distensión|fusión|magma|piroclastos|lapilli|ceniza|lava|conos?|chimenea|cráter|caldera|plutón|dique|viscosidad|sílice|presión|temperatura|granito|obsidiana|pumita|basalto|fanerítica|microcristalina|vítrea|porfídica|vacuolar|foliación|blastesis|arcilla|pizarra|filita|esquisto|gneis|anatexia|corneana|milonita|cuarcita|mármol|silicatos?|olivino|granates|charnela|labios|salto|flancos|pliegue|diaclasa|falla|meteorización|erosión|gelifracción|termoclastia|descompresión|abrasión|oxidación|disolución|carbonatación|hidrólisis|edafización|caliche|litosuelo|porosidad|permeabilidad|fertilidad|textura|estructura|lavado|acumulación|detrito|sedimentación|suspensión|saltación|rodadura|diagénesis|compactación|cementación|sedimentos|clastos|conglomerado|pudinga|brecha|arenisca|marga|cuarzo|yeso|halita|calcita)(?![\p{L}])/giu;
+const modelExplanation = text => `<div class="explanation model-explanation">${explanation(text.replace(modelTerms,term=>`<strong>${term}</strong>`))}</div>`;
 const flow = items => `<ol class="diagram">${items.map(item => `<li>${item}</li>`).join("")}</ol>`;
 const visual = {
   magma: `<figure><div class="volcano" aria-hidden="true"><span class="cone"></span><span class="vent"></span><span class="chamber"></span></div>
@@ -199,7 +201,7 @@ const studyQuestions = {
     ["Relaciona cuarzo, minerales de arcilla, yeso, halita y calcita con una característica o un ejemplo.","Cuarzo: resistente y habitual en areniscas. Minerales de arcilla: pueden proceder de la alteración de feldespatos. Yeso y halita: se asocian a evaporitas. Calcita: carbonato de calcio habitual en las calizas."]
   ],
   magma: [
-    ["Distingue magmatismo, metamorfismo y esfuerzos tectónicos. Identifica un ejemplo de cada uno en el bloque diagrama de la p. 288.","El magmatismo implica fusión y formación de magma. El metamorfismo cambia la roca en estado sólido. Los esfuerzos pueden plegarla o fracturarla. En el diagrama, la subducción facilita la fusión, la compresión en el prisma favorece el metamorfismo y en la falla transformante hay cizalla."],
+    ["Distingue magmatismo, metamorfismo y esfuerzos tectónicos. Identifica un ejemplo de cada uno en el bloque diagrama de la p. 288.","El magmatismo implica fusión y formación de magma. El metamorfismo transforma la roca en estado sólido. Los esfuerzos tectónicos pueden deformar o fracturar las rocas. Subducción → magmatismo. Compresión de los sedimentos → metamorfismo. Falla transformante → cizalla."],
     ["¿Cómo reconocerías un plutón y un dique en un corte?","El plutón es una masa intrusiva; el dique es tabular y corta las estructuras de la roca encajante."],
     ["En un dibujo de un volcán, localiza la cámara, la chimenea, el cráter y el cono. ¿En qué se diferencia una caldera de un cráter?","La cámara contiene magma en profundidad; la chimenea es el conducto; el cráter, la abertura; el cono, el relieve acumulado. Una caldera es una depresión mucho más amplia que puede originarse por hundimiento."],
     ["Explica qué sucede con los gases al ascender el magma. ¿Qué productos puede emitir una erupción?","Al bajar la presión, los gases disueltos forman burbujas y se expanden. La erupción puede emitir gases, lava y piroclastos."],
@@ -297,7 +299,7 @@ const gruposMeteorizacion = [null,preguntasMecanica,preguntasQuimica,preguntasBi
 const examStar = '<span aria-hidden="true">★ </span>';
 
 function promptCards(entries) {
-  return entries.map(([question,answer])=>`<div class="exam-question"><p><strong>${question}</strong></p><details><summary aria-label="Ver respuesta modelo: ${question}">Ver respuesta modelo</summary><p>${answer}</p></details></div>`).join("");
+  return entries.map(([question,answer])=>`<div class="exam-question"><p><strong>${question}</strong></p><details><summary aria-label="Ver respuesta modelo: ${question}">Ver respuesta modelo</summary>${modelExplanation(answer)}</details></div>`).join("");
 }
 
 function studyPrompts(id,index) {
@@ -323,8 +325,8 @@ function studyPrompts(id,index) {
 function figures(lesson,index) {
   const related = bookImages[lesson.id].filter((_,i)=>figurePlacement[lesson.id][i]===index);
   if (!related.length) return "";
-  return `<div class="book-figures">${related.map(([file,title,alt,page])=>`<figure class="book-figure"><a href="./${file}.webp" aria-label="Ampliar en otra pestaña: ${title}" target="_blank" rel="noopener">
-    <img src="./${file}.webp" alt="${alt}" loading="lazy"></a><figcaption><strong>${title}.</strong> Libro, p. ${page}.</figcaption></figure>`).join("")}</div>`;
+  return `<div class="book-figures">${related.map(([file,title,alt,page])=>`<figure class="book-figure"><a href="./${file}.webp?v=14" aria-label="Ampliar en otra pestaña: ${title}" target="_blank" rel="noopener">
+    <img src="./${file}.webp?v=14" alt="${alt}" loading="lazy"></a><figcaption><strong>${title}.</strong> Libro, p. ${page}.</figcaption></figure>`).join("")}</div>`;
 }
 
 function lessonBody(lesson,readButtons=false) {
@@ -358,7 +360,7 @@ ${identificaciones.map(item=>`<section class="block"><h3>Tema ${item.tema} · ${
 <p><strong>Opciones:</strong> ${item.opciones.join(", ")}.</p><ol>${item.partes.map(([label])=>`<li>${label}.</li>`).join("")}</ol></section>`).join("")}
 <h2>Soluciones de identificación</h2>${identificaciones.map(item=>`<section class="block"><h3>${item.titulo}</h3><ol>${item.partes.map(([,correct,why])=>`<li><strong>${correct}.</strong> ${why}</li>`).join("")}</ol></section>`).join("")}
 <h2>Actividades con respuesta escrita</h2>${respuestas.map(([theme,,title,prompt])=>`<section class="block"><h3>Tema ${theme} · ${title}</h3><p>${prompt}</p><div class="writing-lines"></div></section>`).join("")}
-<h2>Soluciones de la práctica escrita</h2>${respuestas.map(([, ,title,,answer])=>`<section class="block"><h3>${title}</h3><p>${answer}</p></section>`).join("")}`;
+<h2>Soluciones de la práctica escrita</h2>${respuestas.map(([, ,title,,answer])=>`<section class="block"><h3>${title}</h3>${modelExplanation(answer)}</section>`).join("")}`;
 screen.addEventListener("click",event => {
   const trigger = event.target.closest("button[data-read]");
   if (trigger) speak(trigger.closest("section"),trigger);
@@ -463,7 +465,7 @@ function showQuestion(focus) {
   ${options.map((option,i)=>`<label class="choice"><input type="radio" name="choice" value="${i}" required ${quiz.choice===i?"checked":""}> ${option}</label>`).join("")}
   </fieldset>${answered?"":'<button class="primary">Comprobar respuesta</button>'}</form>
   ${answered ? `<div class="feedback" tabindex="-1" id="answer-feedback"><h3>${quiz.choice===correct?"Correcto":"Revisa esta pista"}</h3>
-  <p>${reasons[quiz.choice]}</p>${quiz.choice!==correct?`<p><strong>Respuesta correcta: ${options[correct]}.</strong> ${reasons[correct]}</p>`:""}
+  ${modelExplanation(reasons[quiz.choice])}${quiz.choice!==correct?`<p><strong>Respuesta correcta: ${options[correct]}.</strong></p>${modelExplanation(reasons[correct])}`:""}
   <a href="#${topic}">Volver a la explicación</a></div>
   <button class="primary" id="next-question">${quiz.at+1===quiz.ids.length?"Ver resultado":"Siguiente pregunta"}</button>`:""}</section>`;
   $("answer").onsubmit = event => {
@@ -567,7 +569,7 @@ function renderChallengeList(id,guided) {
   <p id="prompt-${i}">${prompt}</p><label for="written-${i}">Tu respuesta</label>
   <textarea id="written-${i}" data-draft="${i}" aria-describedby="prompt-${i}" rows="3"></textarea>
   <button type="button" class="primary" id="exam-written-check">Ver corrección</button>
-  <div id="exam-written-review" hidden><h3>Respuesta modelo y criterios</h3><p>${answer}</p><p><strong>Comprueba:</strong> ${check}</p>
+  <div id="exam-written-review" hidden><h3>Respuesta modelo y criterios</h3>${modelExplanation(answer)}<p><strong>Comprueba:</strong> ${check}</p>
   <label><input type="checkbox" data-complete="written-${i}" ${state.done.includes("written-"+i)?"checked":""}> He comparado mi respuesta</label></div>
   <p><a href="#${lesson}">Consultar la explicación</a></p></section>` : "").join("")}`;
   for (const textarea of $("challenges").querySelectorAll("[data-draft]")) {
@@ -674,7 +676,7 @@ function renderGuidedChallenge(item,index,illustration) {
     if (item && allCorrect) markChallenge(activityId,true);
     area.innerHTML = `<section class="block"><h2 tabindex="-1">Actividad completada</h2>
       ${item ? `<p>${allCorrect?"Has acertado todos los pasos.":"Puedes repetir la actividad para repasar los pasos que fallaste."}</p>${item.final?`<p>${item.final}</p>`:""}`
-      : `<h3>Tus respuestas</h3><ol id="guided-replies"></ol><h3>Respuesta modelo</h3><p>${written[4]}</p><p><strong>Comprueba.</strong> ${written[5]}</p>
+      : `<h3>Tus respuestas</h3><ol id="guided-replies"></ol><h3>Respuesta modelo</h3>${modelExplanation(written[4])}<p><strong>Comprueba.</strong> ${written[5]}</p>
         <label><input type="checkbox" id="guided-reviewed" ${state.done.includes(activityId)?"checked":""}> He comparado mis respuestas</label>`}
       <div class="actions"><button id="guided-repeat">Volver al ejemplo</button><button class="primary" id="guided-choose">Elegir otra actividad</button></div></section>`;
     if (!item) {
@@ -721,7 +723,7 @@ function renderMock() {
     <p>Compara tus respuestas escritas con el modelo. En la imagen se comprueba también cada horizonte que elegiste.</p></section>
     <ol class="mock-list">${preguntasSimulacro.map(({modelo,campos},i)=>`<li class="block"><h3>Pregunta ${i+1}</h3>
     ${(campos||[]).map(([label,,answer],j)=>`<p><strong>${label} · ${mockDraft.get("mock-"+i+"-"+j)===answer?"Correcto":"Revisa"}.</strong> ${answer}.</p>`).join("")}
-    <p><strong>Tu respuesta</strong></p><p id="mock-reply-${i}"></p><p><strong>Respuesta modelo</strong></p><p>${modelo}</p></li>`).join("")}</ol>
+    <p><strong>Tu respuesta</strong></p><p id="mock-reply-${i}"></p><p><strong>Respuesta modelo</strong></p>${modelExplanation(modelo)}</li>`).join("")}</ol>
     <button id="mock-restart">Hacer otro intento</button>`;
     preguntasSimulacro.forEach((_,i)=>{ $("mock-reply-"+i).textContent=mockDraft.get("mock-written-"+i)?.trim() || "Sin respuesta escrita."; });
     $("mock-restart").onclick = () => { mockDraft.clear(); mockSubmitted=false; render(true); };
