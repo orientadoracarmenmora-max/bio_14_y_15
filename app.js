@@ -18,8 +18,30 @@ const screen = $("screen");
 const synth = window.speechSynthesis;
 let utterance;
 let speechRun = 0;
+let speechTimer;
+const sentencePause = 450;
+const endsSentence = part => /[.!?][»”"')\]]*$/u.test(part)
+  && !/\b(?:p|pp|pág|págs|fig|núm|aprox|etc)\.$/iu.test(part);
+
+function speechSentences(text) {
+  const sentences = [];
+  const boundary = /([.!?][»”"')\]]*)\s+(?=[\p{Lu}¿¡0-9«“"])/gu;
+  let start = 0;
+  for (const match of text.matchAll(boundary)) {
+    const end = match.index + match[1].length;
+    const part = text.slice(start,end).trim();
+    if (endsSentence(part)) {
+      sentences.push(part);
+      start = match.index + match[0].length;
+    }
+  }
+  const tail = text.slice(start).trim();
+  if (tail) sentences.push(tail);
+  return sentences;
+}
 function stopSpeech() {
   speechRun++;
+  clearTimeout(speechTimer);
   synth?.cancel();
   utterance = null;
   $("speech-status").textContent = "";
@@ -47,16 +69,21 @@ function speak(area = screen) {
   const lines = area.querySelectorAll("h1,h2,h3,p,figcaption,legend,.choice,li,.feedback");
   const chunks = Array.from(lines)
     .filter(node => node.innerText.trim() && !node.closest("[hidden]") && (!node.closest("details") || node.closest("details").open) && !node.querySelector("p,li"))
-    .map(node => (node.querySelector(".sort-row span")?.innerText || node.innerText).trim());
+    .flatMap(node => speechSentences((node.querySelector(".sort-row span")?.innerText || node.innerText).trim()));
   let index = 0;
   function next() {
     if (currentRun !== speechRun) return;
     if (index === chunks.length) { $("speech-status").textContent = "Lectura terminada."; return; }
-    utterance = new SpeechSynthesisUtterance(chunks[index++]);
+    const chunk = chunks[index++];
+    utterance = new SpeechSynthesisUtterance(chunk);
     utterance.lang = voice?.lang || "es-ES";
     if (voice) utterance.voice = voice;
     utterance.rate = Number(state.rate);
-    utterance.onend = next;
+    utterance.onend = () => {
+      if (currentRun !== speechRun) return;
+      if (index < chunks.length && endsSentence(chunk)) speechTimer = setTimeout(next,sentencePause);
+      else next();
+    };
     utterance.onerror = () => {
       if (currentRun === speechRun) $("speech-status").textContent = "No se pudo reproducir. Prueba otra voz del dispositivo.";
     };
