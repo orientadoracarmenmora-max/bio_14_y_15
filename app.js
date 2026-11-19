@@ -402,21 +402,36 @@ function reviewPage() {
 
 const drafts = new Map();
 function renderChallenges() {
-  screen.innerHTML += `<p>Practica los formatos que describió la profesora. En una respuesta escrita, intenta justificarla antes de descubrir el modelo.</p>
-  <div class="actions">${button("practica","Preguntas de opción múltiple",true)} ${button("serie","Ordenar la serie regional")}</div>
-  <label for="challenge-topic">Ver actividades de</label>
-  <select id="challenge-topic"><option value="">Ambos temas</option><option value="14">Tema 14</option><option value="15">Tema 15</option></select>
-  <div id="challenges"></div>`;
-  $("challenge-topic").onchange = () => renderChallengeList($("challenge-topic").value);
-  renderChallengeList("");
+  screen.innerHTML += `<p>Elige un tema y una actividad. Puedes entrenar con ayuda o resolver el enunciado completo.</p>
+  <div class="challenge-controls">
+    <label for="challenge-topic">Tema <select id="challenge-topic"><option value="14">Tema 14</option><option value="15">Tema 15</option></select></label>
+    <label for="challenge-mode">Cómo practicar <select id="challenge-mode"><option value="guided">Práctica guiada</option><option value="exam">Como en el examen</option></select></label>
+    <label for="challenge-choice">Actividad <select id="challenge-choice"></select></label>
+  </div>
+  <div id="challenges"></div>
+  <div class="actions">${button("practica","Autoevaluación")} ${button("serie","Ordenar la serie regional")}</div>`;
+  const choices = $("challenge-choice");
+  function refresh() {
+    renderChallengeList(choices.value,$("challenge-mode").value==="guided");
+  }
+  function selectTopic() {
+    const topic = Number($("challenge-topic").value);
+    const items = identificaciones.filter(item=>item.tema===topic).map(item=>new Option(item.titulo,item.id));
+    const written = respuestas.flatMap(([number,,title],i)=>number===topic?[new Option(title,"written-"+i)]:[]);
+    choices.replaceChildren(...items,...written);
+    refresh();
+  }
+  $("challenge-topic").onchange = selectTopic;
+  $("challenge-mode").onchange = refresh;
+  choices.onchange = refresh;
+  selectTopic();
 }
 function markChallenge(id,completed) {
   if (completed && !state.done.includes(id)) state.done.push(id);
   if (!completed) state.done = state.done.filter(item=>item!==id);
   save();
 }
-function renderChallengeList(theme) {
-  const match = number => !theme || String(number) === theme;
+function renderChallengeList(id,guided) {
   const labels = element => element.partes.map(([label],i)=>`<div class="match-row"><label for="${element.id}-${i}">${element.capas || element.perfiles ? label.split(" · ")[0] : label}</label><select id="${element.id}-${i}" required>
     <option value="">Elige una opción</option>${element.opciones.map(option=>`<option>${option}</option>`).join("")}</select></div>`).join("");
   const illustration = item => {
@@ -437,20 +452,39 @@ function renderChallengeList(theme) {
     if (id==="perfil") return `<figure><ol class="soil-profile" aria-label="Perfil del suelo de arriba abajo"><li>Capa 1</li><li>Capa 2</li><li>Capa 3</li><li>Capa 4</li></ol><figcaption>Corte esquemático del suelo, desde la superficie hasta la roca de partida.</figcaption></figure>`;
     return "";
   };
-  $("challenges").innerHTML = `<h2 class="section-title">Identifica en un esquema o a partir de pistas</h2>
-  ${identificaciones.filter(item=>match(item.tema)).map(item=>`<section class="block"><h3>${item.titulo}</h3><p>${item.descripcion}</p>${illustration(item)}${item.capas || item.perfiles ? `<details><summary>Ver pistas del dibujo</summary><ul>${item.partes.map(([label])=>`<li>${label}</li>`).join("")}</ul></details>` : ""}<form data-match="${item.id}">${labels(item)}
+  const selected = identificaciones.find(item=>item.id===id);
+  const index = selected ? -1 : Number(id.slice("written-".length));
+  if (guided) {
+    renderGuidedChallenge(selected,index,illustration);
+    return;
+  }
+  $("challenges").innerHTML = `
+  ${identificaciones.filter(item=>item.id===id).map(item=>`<section class="block"><h3>${item.titulo}</h3><p>${item.descripcion}</p>${illustration(item)}<form data-match="${item.id}">${labels(item)}
   <button class="primary">Comprobar correspondencias</button></form><div id="feedback-${item.id}" aria-live="polite"></div></section>`).join("")}
-  <h2 class="section-title">Escribe y justifica</h2>
-  ${respuestas.map(([number,lesson,title,prompt,answer,check],i)=> match(number) ? `<section class="block written">
+  ${selected?"":'<h2 class="section-title">Escribe y justifica</h2>'}
+  ${respuestas.map(([number,lesson,title,prompt,answer,check],i)=> i===index ? `<section class="block written">
   <div class="block-head"><h3>Tema ${number} · ${title}</h3>${speaker("Escuchar la actividad "+title,"data-read")}</div>
   <p id="prompt-${i}">${prompt}</p><label for="written-${i}">Tu respuesta</label>
   <textarea id="written-${i}" data-draft="${i}" aria-describedby="prompt-${i}" rows="3"></textarea>
-  <details><summary>Ver respuesta modelo y criterios</summary><p>${answer}</p><p><strong>Comprueba:</strong> ${check}</p>
-  <label><input type="checkbox" data-complete="written-${i}" ${state.done.includes("written-"+i)?"checked":""}> He comparado mi respuesta</label></details>
+  <button type="button" class="primary" id="exam-written-check">Ver corrección</button>
+  <div id="exam-written-review" hidden><h3>Respuesta modelo y criterios</h3><p>${answer}</p><p><strong>Comprueba:</strong> ${check}</p>
+  <label><input type="checkbox" data-complete="written-${i}" ${state.done.includes("written-"+i)?"checked":""}> He comparado mi respuesta</label></div>
   <p><a href="#${lesson}">Consultar la explicación</a></p></section>` : "").join("")}`;
   for (const textarea of $("challenges").querySelectorAll("[data-draft]")) {
     textarea.value = drafts.get(textarea.dataset.draft) || "";
     textarea.oninput = () => drafts.set(textarea.dataset.draft,textarea.value);
+    $("exam-written-check").onclick = () => {
+      if (!textarea.value.trim()) {
+        textarea.setCustomValidity("Escribe tu respuesta antes de ver la corrección.");
+        textarea.reportValidity();
+        textarea.focus();
+        textarea.setCustomValidity("");
+        return;
+      }
+      $("exam-written-review").hidden = false;
+      $("exam-written-review").setAttribute("tabindex","-1");
+      $("exam-written-review").focus();
+    };
   }
   for (const check of $("challenges").querySelectorAll("[data-complete]")) {
     check.onchange = () => markChallenge(check.dataset.complete,check.checked);
@@ -475,6 +509,87 @@ function renderChallengeList(theme) {
       if (score===rows.length) markChallenge(item.id,true);
     };
   }
+}
+
+function renderGuidedChallenge(item,index,illustration) {
+  const area = $("challenges");
+  const written = item ? null : respuestas[index];
+  const title = item?.titulo || written[2];
+  const [caseText,solution] = ejemplosGuiados[item ? temasIdentificacion[item.id] : written[1]];
+  const steps = item?.partes || consignasEscritas[index];
+  const activityId = item?.id || "written-"+index;
+  let step = 0;
+  let allCorrect = true;
+
+  function showExample(focus=false) {
+    area.innerHTML = `<section class="block"><h2 tabindex="-1">${title}</h2>
+    <div class="notice"><h3>Ejemplo resuelto</h3><p>${caseText}</p><p><strong>Respuesta y pista.</strong> ${solution}</p></div>
+    <button class="primary" id="guided-start">Empezar actividad</button></section>`;
+    $("guided-start").onclick = () => showStep();
+    if (focus) area.querySelector("h2").focus();
+  }
+
+  function showStep() {
+    stopSpeech();
+    const current = steps[step];
+    const prompt = item ? current[0] : current;
+    const label = item?.capas || item?.perfiles ? "Identifica " + prompt.split(" · ")[0] + "." : prompt;
+    area.innerHTML = `<section class="block">
+      <div class="block-head"><h2 tabindex="-1">${title}</h2>${speaker("Escuchar el paso","data-read")}</div>
+      <p><strong>Paso ${step+1} de ${steps.length}</strong></p>
+      ${item ? illustration(item) : `<p>${contextosEscritos[index]}</p>`}
+      ${item?.capas || item?.perfiles ? `<details><summary>Ver una pista</summary><p>${prompt.split(" · ")[1]}</p></details>` : ""}
+      <form id="guided-form"><p id="guided-prompt"><strong>${label}</strong></p>
+      ${item ? `<label for="guided-answer">Elige una respuesta</label>
+        <select id="guided-answer" aria-describedby="guided-prompt" required><option value="">Selecciona una opción</option>${item.opciones.map(option=>`<option>${option}</option>`).join("")}</select>`
+        : '<label for="guided-answer">Escribe tu respuesta</label><textarea id="guided-answer" rows="3" aria-describedby="guided-prompt" required></textarea>'}
+      <div class="actions"><button class="primary">${item?"Comprobar respuesta":"Guardar y continuar"}</button></div></form>
+      <div id="guided-feedback" tabindex="-1"></div>
+    </section>`;
+    if (!item) {
+      const key = activityId+"-step-"+step;
+      $("guided-answer").value = drafts.get(key) || "";
+      $("guided-answer").oninput = event => drafts.set(key,event.target.value);
+    }
+    $("guided-form").onsubmit = event => {
+      event.preventDefault();
+      const field = $("guided-answer");
+      if (!field.value.trim()) { field.focus(); return; }
+      if (!item) { advance(); return; }
+      const right = field.value === current[1];
+      allCorrect &&= right;
+      field.disabled = true;
+      event.submitter.disabled = true;
+      $("guided-feedback").className = "feedback";
+      $("guided-feedback").innerHTML = `<h3>${right?"Correcto":"Revisa esta pista"}</h3><p><strong>${current[1]}.</strong> ${current[2]}</p>
+        <button class="primary" id="guided-next">${step+1===steps.length?"Ver resultado":"Siguiente paso"}</button>`;
+      $("guided-feedback").focus();
+      $("guided-next").onclick = advance;
+    };
+    area.querySelector("h2").focus();
+  }
+
+  function advance() {
+    if (++step < steps.length) { showStep(); return; }
+    if (item && allCorrect) markChallenge(activityId,true);
+    area.innerHTML = `<section class="block"><h2 tabindex="-1">Actividad completada</h2>
+      ${item ? `<p>${allCorrect?"Has acertado todos los pasos.":"Puedes repetir la actividad para repasar los pasos que fallaste."}</p>${item.final?`<p>${item.final}</p>`:""}`
+      : `<h3>Tus respuestas</h3><ol id="guided-replies"></ol><h3>Respuesta modelo</h3><p>${written[4]}</p><p><strong>Comprueba.</strong> ${written[5]}</p>
+        <label><input type="checkbox" id="guided-reviewed" ${state.done.includes(activityId)?"checked":""}> He comparado mis respuestas</label>`}
+      <div class="actions"><button id="guided-repeat">Volver al ejemplo</button><button class="primary" id="guided-choose">Elegir otra actividad</button></div></section>`;
+    if (!item) {
+      for (const [i,prompt] of steps.entries()) {
+        const li = document.createElement("li");
+        li.textContent = prompt+" "+(drafts.get(activityId+"-step-"+i) || "");
+        $("guided-replies").append(li);
+      }
+      $("guided-reviewed").onchange = event => markChallenge(activityId,event.target.checked);
+    }
+    $("guided-repeat").onclick = () => { step=0; allCorrect=true; showExample(true); };
+    $("guided-choose").onclick = () => $("challenge-choice").focus();
+    area.querySelector("h2").focus();
+  }
+  showExample();
 }
 
 let beginReview = false;

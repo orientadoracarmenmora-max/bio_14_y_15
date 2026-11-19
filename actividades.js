@@ -88,3 +88,59 @@ const identificaciones = [
    ["Cizalla · los bloques se desplazan lateralmente","Falla de desgarre","En el desgarre predomina el movimiento lateral."]
   ]}
 ];
+
+const ejemplosGuiados = {
+ meteorizacion:["Una roca se agrieta tras perder la presión de los materiales que tenía encima.","Es descompresión. La pista es la pérdida de presión: al expandirse, la roca se agrieta."],
+ suelo:["Un dibujo señala la capa superficial de hojas y restos orgánicos.","Es el horizonte O, o mantillo. La pista es que está en la superficie y contiene restos orgánicos."],
+ sedimentos:["Una partícula avanza pegada al fondo y gira con la corriente.","Es rodadura. La partícula gira sin separarse del fondo."],
+ sedimentarias:["Una roca detrítica contiene clastos unidos de 6 mm con bordes angulosos.","Es un conglomerado tipo brecha. El tamaño supera los 2 mm y los clastos son angulosos."],
+ magma:["Un fragmento sólido expulsado por un volcán mide 12 mm.","Es lapilli: es un piroclasto de entre 2 y 64 mm."],
+ igneas:["Una roca ligera presenta muchos huecos que dejó el gas.","Tiene textura vacuolar. La pumita es un ejemplo del libro."],
+ meta:["Una arenisca rica en cuarzo se transforma en estado sólido por metamorfismo.","Puede originar cuarcita. La pista es que la roca de partida es una arenisca rica en cuarzo."],
+ ciclo:["Una roca expuesta se fragmenta y sus granos son retirados por una corriente.","La fragmentación es meteorización. La retirada de los granos por la corriente es erosión."],
+ esfuerzos:["En un corte, las capas se curvan y siguen siendo continuas.","Es un pliegue. La pista es la curvatura de las capas."],
+};
+
+const temasIdentificacion = {
+ "perfil-foto":"suelo", perfil:"suelo", "perfil-llanura":"suelo", "perfil-rocoso":"suelo",
+ "fotos-libro":"sedimentos", "cauce-libro":"sedimentos", clastos:"sedimentos",
+ volcan:"magma", "corte-libro":"esfuerzos", fallas:"esfuerzos"
+};
+
+const consignasEscritas = [
+ ["Indica qué muestra tiene más madurez textural.","Justifica tu respuesta con el tamaño y la forma de los clastos.","Explica por qué importa qué agente transportó cada muestra."],
+ ["Nombra la alteración que sufre el cemento calcáreo.","Explica por qué se desprenden después los granos."],
+ ["Indica si el crecimiento de los cristales cambia la textura o la estructura.","Indica si la orientación de las micas cambia la textura o la estructura."],
+ ["Nombra la estructura que forman las capas curvadas.","Nombra la estructura que desplaza las capas.","Señala una pista visible que permita distinguirlas."],
+ ["Nombra el mecanismo que rompe la roca cuando se congela el agua.","Nombra el mecanismo que desgasta la roca por el roce de arena.","Nombra el mecanismo que transforma el feldespato en arcilla.","Justifica uno de los tres mecanismos con la pista del enunciado."],
+ ["Identifica el perfil con costra de cal.","Identifica el perfil delgado sobre roca madre.","Explica qué pista permite distinguir esos dos perfiles."],
+ ["Explica si el suelo del caso puede tener mucha porosidad y poca permeabilidad.","Nombra dos factores que influyan en su fertilidad."],
+ ["Indica qué material es el detrito.","Señala en qué momento ocurre la erosión.","Explica por qué se depositan los clastos más abajo."],
+ ["Clasifica la roca de cantos de 7 mm.","Clasifica la roca de granos de 0,5 mm.","Justifica las dos clasificaciones usando el tamaño de los fragmentos."],
+ ["Indica qué ocurre con la presión cuando asciende el magma.","Explica qué les ocurre a los gases al bajar la presión.","Da un ejemplo de producto gaseoso, uno líquido y uno sólido."],
+ ["Identifica la muestra con cristales visibles de cuarzo, feldespatos y micas.","Identifica la muestra de fractura curva y aspecto de vidrio.","Relaciona una de las dos texturas con la velocidad de enfriamiento."],
+ ["Escribe la serie en orden desde la arcilla.","Explica qué sucede cuando se alcanza la anatexia.","Da una pista para reconocer una de las rocas de la serie."],
+ ["Identifica la roca y el tipo de metamorfismo de la aureola.","Identifica la roca y el tipo de metamorfismo de la zona de falla."],
+ ["Explica cómo se obtienen sedimentos a partir del granito.","Indica qué proceso transforma esos sedimentos en arenisca.","Indica qué proceso puede transformar la arenisca en cuarcita."],
+ ["Identifica la estructura A y da una pista.","Identifica la estructura B y da una pista.","Identifica la estructura C y da una pista."],
+ ["Define charnela.","Define flancos.","Define plano axial.","Define plano de falla.","Define labios de falla.","Define salto de falla."]
+];
+
+const contextosEscritos = [
+ "Una arena tiene granos pequeños y redondeados. Un depósito glaciar presenta clastos de varios tamaños con bordes angulosos.",
+ "En una arenisca, un cemento calcáreo une los granos de cuarzo. La lluvia contiene dióxido de carbono.",
+ "En una muestra metamorfizada crece el feldespato. En otra, las micas se orientan en planos.",
+ "Un corte muestra capas curvadas y una fractura recta con las mismas capas desplazadas a ambos lados.",
+ "En la primera roca se congela agua en las grietas. La segunda se desgasta por el roce de arena. En la tercera el feldespato se convierte en arcilla.",
+ "Un perfil tiene costra de cal en una región seca. El otro es muy delgado y se asienta sobre roca madre poco alterada.",
+ "Un suelo arcilloso tiene muchos huecos pequeños y el agua circula despacio.",
+ "Una ladera libera fragmentos. La lluvia los arrastra a un río y, más abajo, la corriente pierde energía.",
+ "La roca A tiene cantos redondeados de 7 mm. La roca B tiene granos cementados de cuarzo de 0,5 mm.",
+ "El magma asciende hasta alcanzar la superficie.",
+ "Una muestra tiene cristales visibles de cuarzo, feldespatos y micas. La otra es negra y compacta, sin cristales visibles y de fractura curva.",
+ "La serie empieza en un material arcilloso y continúa a medida que aumenta el grado metamórfico.",
+ "Una muestra procede de una aureola junto a una intrusión. Otra se deformó intensamente en una falla.",
+ "El cuarzo de un granito acaba primero en una arenisca y luego en una cuarcita.",
+ "En A se curvan las capas. En B hay una fractura con las capas alineadas. En C, una capa queda desplazada a ambos lados de la fractura.",
+ "Recuerda los elementos de un pliegue y de una falla del esquema del libro."
+];
