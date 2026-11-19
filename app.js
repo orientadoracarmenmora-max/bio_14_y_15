@@ -318,7 +318,7 @@ function studyPrompts(id,index) {
   const confirmed = id==="meta" && index===3;
   return `<div class="study-prompts inline-prompts"><h3>${examStar}${confirmed?"Pregunta confirmada por Belén":entries.length===1?"Posible pregunta de examen":"Posibles preguntas de examen"}</h3>
   ${promptCards(entries)}
-  ${id==="suelo" && index===1?button("retos","Practicar con perfiles y fotografías"):""}
+  ${id==="suelo" && index===1?button("horizontes","Entrenar con perfiles diferentes",true):""}
   ${confirmed?button("serie","Practicar el orden de la serie"):""}
   </div>`;
 }
@@ -532,7 +532,7 @@ function renderChallenges() {
     <label for="challenge-choice">Actividad <select id="challenge-choice"></select></label>
   </div>
   <div id="challenges"></div>
-  <div class="actions">${button("simulacro","Simulacro de los dos temas",true)} ${button("practica","Autoevaluación")} ${button("serie","Ordenar la serie regional")}</div>`;
+  <div class="actions">${button("horizontes","Entrenar horizontes",true)} ${button("simulacro","Simulacro de los dos temas",true)} ${button("practica","Autoevaluación")} ${button("serie","Ordenar la serie regional")}</div>`;
   const choices = $("challenge-choice");
   function refresh() {
     renderChallengeList(choices.value,$("challenge-mode").value==="guided");
@@ -800,8 +800,69 @@ function renderMock() {
   if (mockSubmitted) showResult(false);
 }
 
+function trainingProfile(profile) {
+  if (profile.foto) return `<figure class="book-figure photo-exercise">
+    <div class="numbered-photo"><img src="./14-perfil-${profile.foto}.webp" alt="${profile.alt}">
+    ${profile.marcas.map(([tag,y])=>`<span aria-hidden="true" style="--x:58%;--y:${y}%">${tag}</span>`).join("")}</div>
+    <figcaption>Fotografía de un perfil real · USDA–NRCS</figcaption></figure>`;
+  const textures = ["roots","dots","gravel"];
+  return `<figure class="profile-training-drawing"><div class="profile-training-column" role="img" aria-label="${profile.capas.map(([tag,,,alt])=>tag+". "+alt).join(" ")}">
+    ${profile.capas.map(([tag,color,depth],i)=>`<div aria-hidden="true" class="soil-band ${textures[i===profile.capas.length-1 ? 2 : Math.min(i,1)]}" style="--soil:${color};--depth:${depth}"><b>${tag}</b></div>`).join("")}
+    </div><figcaption>Dibujo esquemático del perfil</figcaption></figure>`;
+}
+
+function renderSoilTraining() {
+  screen.innerHTML += '<div id="soil-training"></div>';
+  const area = $("soil-training");
+  let current = 0;
+  const order = [0,1,2,3];
+  const attempts = [];
+  function example(focus=false) {
+    area.innerHTML = `<section class="block"><h2 tabindex="-1">Ejemplo guiado</h2>
+      <p>Observa la flecha de la foto del libro. Señala la franja clara que está encima de la franja ocre.</p>
+      <figure class="book-figure photo-exercise"><img src="./14-podsol.webp" alt="Un perfil de suelo. Una flecha verde señala una franja clara encima de una franja de color ocre."><figcaption>Fotografía del libro, p. 271.</figcaption></figure>
+      <p><strong>Respuesta.</strong> En el perfil del libro, la franja señala el <strong>horizonte A</strong>, donde predomina el <strong>lavado</strong>. En el <strong>horizonte B</strong>, situado debajo, se acumula parte del material arrastrado.</p>
+      <p>En los perfiles de práctica, fíjate en la posición y en los materiales. Los colores y el grosor de las capas pueden cambiar.</p>
+      <button id="soil-start" class="primary">Empezar sin pistas</button></section>`;
+    $("soil-start").onclick = question;
+    if (focus) area.querySelector("h2").focus();
+  }
+  function question() {
+    const profile = perfilesEntrenamiento[order[current]];
+    area.innerHTML = `<section class="block"><h2 tabindex="-1">Perfil ${current+1} de ${order.length}</h2><h3>${profile.titulo}</h3>
+      <p>Identifica el horizonte que corresponde a cada letra.</p>
+      ${trainingProfile(profile)}
+      <form id="soil-form">${profile.correccion.map(([tag],i)=>`<div class="match-row"><label for="soil-response-${i}">Marca ${tag}</label><select id="soil-response-${i}" required><option value="">Elige un horizonte</option>${["O","A","B","C"].map(h=>`<option value="${h}">Horizonte ${h}</option>`).join("")}</select></div>`).join("")}
+      <button class="primary">${current+1===order.length?"Entregar y ver la corrección":"Siguiente perfil"}</button></form></section>`;
+    $("soil-form").onsubmit = event => {
+      event.preventDefault();
+      attempts.push(profile.correccion.map((_,i)=>$("soil-response-"+i).value));
+      if (++current<order.length) question();
+      else correction();
+    };
+    area.querySelector("h2").focus();
+  }
+  function correction() {
+    area.innerHTML = `<section class="notice"><h2 tabindex="-1">Corrección de los cuatro perfiles</h2><p>Compara lo que elegiste con la pista de cada capa.</p></section>
+      ${order.map((id,i)=>{
+        const profile = perfilesEntrenamiento[id];
+        return `<section class="block"><h3>Perfil ${i+1} · ${profile.titulo}</h3>${trainingProfile(profile)}
+        <ul>${profile.correccion.map(([tag,expected,why],j)=>`<li><strong>${tag} · ${attempts[i][j]===expected?"Correcto":"Revisa"}.</strong> Elegiste el horizonte ${attempts[i][j]}. Corresponde al <strong>horizonte ${expected}</strong>. ${why}</li>`).join("")}</ul>
+        ${profile.nota?`<p>${profile.nota}</p>`:""}${profile.credito?`<p>${profile.credito} <a href="${fuentePerfiles}" target="_blank" rel="noopener">Ver la fuente original</a></p>`:""}</section>`;
+      }).join("")}<button id="soil-repeat">Repetir con otro orden</button>`;
+    $("soil-repeat").onclick = () => {
+      current=0;
+      attempts.length=0;
+      order.push(order.shift());
+      example(true);
+    };
+    area.querySelector("h2").focus();
+  }
+  example();
+}
+
 let beginReview = false;
-const titles = {inicio:"Procesos geológicos",externos:"Procesos geológicos externos",internos:"Procesos geológicos internos",retos:"Actividades de examen",simulacro:"Simulacro de examen",examen:"Qué entra en el examen",serie:"Ordena la serie regional",practica:"Autoevaluación",repaso:"Repaso y progreso"};
+const titles = {inicio:"Procesos geológicos",externos:"Procesos geológicos externos",internos:"Procesos geológicos internos",retos:"Actividades de examen",horizontes:"Entrena con distintos perfiles",simulacro:"Simulacro de examen",examen:"Qué entra en el examen",serie:"Ordena la serie regional",practica:"Autoevaluación",repaso:"Repaso y progreso"};
 function render(focus) {
   stopSpeech();
   const hash = location.hash.slice(1);
@@ -825,6 +886,7 @@ function render(focus) {
     screen.innerHTML += `<p class="kicker">Tema ${page==="externos"?14:15}</p><div class="grid">${group.map(item=>`<section class="card"><h2><a href="#${item.id}">${item.titulo}</a></h2><div class="explanation">${explanation(item.idea)}</div></section>`).join("")}</div>`;
   }
   if (page === "retos") renderChallenges();
+  if (page === "horizontes") renderSoilTraining();
   if (page === "simulacro") renderMock();
   if (page === "serie") sortPage();
   if (page === "practica") {

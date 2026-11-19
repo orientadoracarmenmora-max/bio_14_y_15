@@ -166,3 +166,29 @@ const preguntasSimulacro = [
  {tema:15,corte:"falla",pregunta:"Observa el corte 2. Nombra la estructura y explica qué rasgo te permite reconocerla. Identifica y define los elementos A, B y C.",
   modelo:"Es una falla porque hay una rotura con desplazamiento de las capas. A es el plano de falla, la superficie de rotura por la que se desplazaron los bloques. B señala los labios, los dos bloques a ambos lados de la falla. C señala el salto de falla, el desplazamiento relativo que se aprecia al comparar la misma capa a ambos lados."}
 ];
+
+const fuentePerfiles = "https://www.nrcs.usda.gov/sites/default/files/2022-09/Keys-to-Soil-Taxonomy.pdf";
+const perfilesEntrenamiento = [
+ {titulo:"Foto · Perfil con fondo de roca alterada",foto:"whitetop",
+  alt:"C señala la capa oscura superficial. A señala la zona parda intermedia. D señala la roca clara alterada de la parte inferior.",
+  marcas:[["C",17],["A",37],["D",74]],
+  correccion:[["C","A","Es el horizonte mineral superficial, oscuro y con raíces."],["A","B","Es la zona mineral intermedia por debajo del horizonte superficial."],["D","C","Es el material de partida alterado, de aspecto rocoso."]],
+  credito:"John A. Kelley, USDA–NRCS. Serie Whitetop (portada, arriba a la derecha). Se han recortado los rótulos y añadido letras."},
+ {titulo:"Dibujo · Perfil bajo vegetación",capas:[
+    ["D","#503727",12,"Banda superficial delgada de hojas y restos orgánicos."],
+    ["B","#956247",29,"Capa mineral superior con raíces."],
+    ["A","#b0774d",37,"Capa intermedia donde el esquema representa acumulaciones."],
+    ["C","#d6bb95",22,"Capa inferior con fragmentos de roca alterada."]],
+  correccion:[["D","O","El mantillo orgánico está en la superficie."],["B","A","Es la capa mineral superficial, por debajo del mantillo."],["A","B","Se encuentra debajo del horizonte A. El esquema señala acumulaciones."],["C","C","Contiene fragmentos del material de partida alterado."]]},
+ {titulo:"Foto · Perfil bajo musgo",foto:"adams",
+  alt:"D señala una capa oscura muy fina justo debajo del musgo. A señala una franja cobriza situada bajo una zona gris. B apunta al material inferior, gris parduzco.",
+  marcas:[["D",12],["A",35],["B",83]],
+  correccion:[["D","O","Es la capa de materia orgánica bajo el musgo."],["A","B","Es la franja cobriza de acumulación, por debajo de la banda gris."],["B","C","Es el material de partida de la parte inferior."]],
+  nota:"La franja gris que queda sin letra se denomina horizonte E en la fuente. Solo se evalúan las partes marcadas.",
+  credito:"John A. Kelley, USDA–NRCS. Serie Adams (portada, abajo en el centro). Se han recortado los rótulos y añadido letras."},
+ {titulo:"Dibujo · Perfil con horizonte superficial delgado",capas:[
+    ["C","#80563e",17,"Capa mineral superficial oscura con raíces. No se dibuja un mantillo separado."],
+    ["A","#a96d43",46,"Franja intermedia gruesa con acumulaciones señaladas en el esquema."],
+    ["B","#d0b896",37,"Zona profunda con abundantes fragmentos de roca."]],
+  correccion:[["C","A","Es la primera capa mineral. En este dibujo el mantillo no aparece como capa separada."],["A","B","Es la capa intermedia de acumulación."],["B","C","La pista es su posición profunda y los fragmentos de roca alterada."]]}
+];
